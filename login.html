@@ -23,7 +23,7 @@
     </head>
 
     <!--    Main Section    -->
-    <body class="sb-expanded">        
+    <body class="sb-expanded">
         <!--    Navigation Section      -->
         <nav id="sidebar">
             <ul>
@@ -79,10 +79,31 @@
         
         <!--    Page Content    -->
         <main>
-            <h1> Welcome to CityLink Initiatives </h1>
             <section>
-                <h2> Test </h2>
-                <p> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Blanditiis corporis dolore ad nostrum, atque dolor ut, explicabo accusamus vel, omnis magni facere? Cum veritatis eligendi, impedit voluptatum doloremque numquam! Perferendis? </p>
+                <!--    Login Form  -->
+                <form id="login-form">
+                    <!--    Company logo    -->
+                    <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" />
+                    
+                    <!--    Section header  -->
+                    <h2> Sign in </h2>
+
+                    <!--    Username section    -->
+                    <label for="username"> Username or email </label>
+                    <input type="text" id="username" name="username" required>
+
+                    <!--    Password section    -->
+                    <label for="password"> Password </label>
+                    <input type="password" id="password" name="password" required>
+
+                    <!--    Submission Button   -->
+                    <button type="submit"> Submit </button>
+
+                    <a href="#"> Forgot Password? </a>
+
+                    <p> Don't have an account? </p>
+                    <p>Register <a href="#"> Here</a>. </p>
+                </form>
             </section>
         </main> <!--    End page content    -->
 
