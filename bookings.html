@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<!--
+    // -----------------------------------------------------------------------------
+    //  Copyright (c) 2025 SMT Students
+    //  All rights reserved.
+    // 
+    //  This file is part of Smart Community Portal (SCP).
+    //  Unauthorized copying of this file, via any medium is strictly prohibited.
+    //  Proprietary and confidential.
+    // 
+    //  Written by Michael McKIE, 2025
+    // -----------------------------------------------------------------------------
+-->
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> Smart Community Portal </title>
+        <link rel="stylesheet" href="./styles/styles.css" />
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    </head>
+
+    <!--    Main Section    -->
+    <body class="sb-expanded">        
+        <!--    Navigation Section      -->
+        <nav id="sidebar">
+            <ul>
+                <!--    Collapse/Expand   -->
+                <li>
+                    <button onclick=toggleSidebar() id="toggle-btn">
+                        <i id="icon-expand" class="bx bx-chevrons-right hidden"> </i>
+                        <i id="icon-collapse" class="bx bx-chevrons-left"> </i>
+                    </button>
+                </li>
+
+                <!--    Home    -->
+                <li class="active">
+                    <a href="./index.html">
+                        <i class="bx bx-home-circle"> </i>
+                        <span> Home </span>
+                    </a>
+                </li>
+
+                <!--    Login    -->
+                <li>
+                    <a href="./login.html">
+                        <i class="bx bx-user"> </i>
+                        <span> Login </span>
+                    </a>
+                </li>
+
+                <!--    Feedback    -->
+                <li>
+                    <a href="./feedback.html">
+                        <i class='bx  bx-chat'  ></i> 
+                        <span> Feedback </span>
+                    </a>
+                </li>
+
+                <!--    Bookings    -->
+                <li>
+                    <a href="./bookings.html">
+                        <i class="bx bx-book-open"> </i>
+                        <span> Bookings </span>
+                    </a>
+                </li>
+
+                <!--    About   -->
+                <li>
+                    <a href="./about.html">
+                        <i class="bx bx-info-square"> </i>
+                        <span> About </span>
+                    </a>
+                </li>
+            </ul>
+        </nav> <!--     End Navigation Section      -->
+        
+        <!--    Page Content    -->
+        <main>
+            <h1> Welcome to CityLink Initiatives </h1><br>
+
+            <div class="upcoming-events">
+                <h2>Upcoming Events</h2>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Local Council Meeting – Join the Discussion:</strong><br>
+                        Description: Participate in the local council meetings and have your say on community projects, infrastructure developments, and local policy decisions. Your voice matters in shaping the future of our community.
+                    </div>
+                    <button class="uniform-button">RSVP Now</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Waste Collection Schedule – Find Your Next Pick-Up:</strong><br>
+                        Description: Stay on top of waste collection days in your area. Check the schedule for bin pick-up times and any special recycling or green waste events.
+                    </div>
+                    <button class="uniform-button">View Schedule</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Community Gardening Program – Sign Up for a Plot:</strong><br>
+                        Description: Get involved in our community gardening program! Sign up for a plot in the local garden and contribute to growing fresh produce for our neighbourhood.
+                    </div>
+                    <button class="uniform-button">Reserve Your Plot</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Neighbourhood Watch Information Session:</strong><br>
+                        Description: Join our Neighbourhood Watch program to help keep our community safe. Attend an info session to learn about safety initiatives, reporting suspicious activities, and getting involved in your local watch group.
+                    </div>
+                    <button class="uniform-button">Learn More</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Local Job Fair – Connecting Employers and Job Seekers:</strong><br>
+                        Description: Looking for work? Join us at the Local Job Fair to meet potential employers and discover job opportunities in your area. Whether you’re looking for full-time, part-time, or casual work, this event is for you!
+                    </div>
+                    <button class="uniform-button">Register Now</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Community Health Check – Free Medical Services:</strong><br>
+                        Description: Take advantage of our free community health checks, including blood pressure, glucose tests, and health screenings. Get advice from local medical professionals on staying healthy.
+                    </div>
+                    <button class="uniform-button">Book Your Appointment</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Youth Mentoring Program – Apply to Be a Mentor or Mentee:</strong><br>
+                        Description: Join the Youth Mentoring Program to help empower the next generation. Whether you’re interested in becoming a mentor or finding a mentor, this program fosters positive relationships and personal development for young people.
+                    </div>
+                    <button class="uniform-button">Apply Now</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>National Tree Day – Volunteer to Plant Trees:</strong><br>
+                        Description: Celebrate National Tree Day by volunteering to plant trees in our local parks and nature reserves. Help us make the community greener and more sustainable for future generations.
+                    </div>
+                    <button class="uniform-button">Sign Up to Volunteer</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Public Transport Updates – Track Service Changes:</strong><br>
+                        Description: Stay informed with real-time updates on bus, train, and tram schedules. Receive alerts for any disruptions, service changes, or delays, ensuring you always know the latest transport info.
+                    </div>
+                    <button class="uniform-button">View Updates</button>
+                </div>
+
+                <div class="event-item">
+                    <div>
+                        <strong>Public Library Event: Author Reading & Book Launch:</strong><br>
+                        Description: Attend a public library event featuring local authors and book launches. Meet the authors, participate in Q&A sessions, and find your next great read.
+                    </div>
+                    <button class="uniform-button">RSVP Here</button>
+                </div>
+            </div>
+
+
+
+            <div class="selected-event">
+            <h2>Selected Event</h2>
+
+            <div class="form-inputs">
+                <label for="name">Name: (Autofill if login)</label>
+                <input type="text" id="name" name="name">
+                
+                <label for="email">Email: (Autofill if login)</label>
+                <input type="email" id="email" name="email">
+                
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone">
+                
+                <label for="amount">Amount of people:</label>
+                <input type="number" id="amount" name="amount">
+                
+                <button class="submit-button">Submit</button>
+            </div>
+        </div>
+        </main> <!--    End page content    -->
+
+        <!--    Footer section      -->
+        <Footer>
+            &copy; 2025 CityLink Initiatives. &nbsp;
+            <a href="privacy.html"> Privacy Policy </a>
+        </Footer>
+
+        <script type="text/javascript" src="./js/script.js" defer></script>
+    </body>
+</html>
