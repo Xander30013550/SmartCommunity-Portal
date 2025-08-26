@@ -1,127 +1,38 @@
 <?php
 declare(strict_types=1);
-libxml_use_internal_errors(true);
 
-function e(string $s): string {
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
-}
+require __DIR__ . '/vendor/autoload.php';
 
-/**
- * Load and parse an XML file safely. Returns SimpleXMLElement|null.
- */
-function loadXml(string $path): ?SimpleXMLElement {
-    if (!is_file($path)) return null;
-    $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
-    return $xml !== false ? $xml : null;
-}
-function getPrimaryMenuItems(string $menusPath): array {
-    $xml = loadXml($menusPath);
-    if (!$xml) return [];
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
 
-    // If you use namespaces later, switch to XPath with registerXPathNamespace(...)
-    $menu = $xml->menu; // assumes only one primary menu
-    if (!$menu) {
-        // Try to find <menu id="primary"> if multiple menus exist
-        foreach ($xml->menu as $m) {
-            if ((string)($m['id'] ?? '') === 'primary') {
-                $menu = $m;
-                break;
-            }
-        }
-    }
-    if (!$menu) return [];
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
 
-    // Normalize each <item> into an array
-    $items = [];
-    foreach ($menu->item as $item) {
-        $items[] = [
-            'id'    => (string)($item['id'] ?? ''),
-            'label' => trim((string)($item->label ?? 'Untitled')),
-            'url'   => trim((string)($item->url ?? '#')),
-            'icon'  => trim((string)($item->icon ?? 'bx bx-link')),
-            'weight'=> (int)($item['weight'] ?? 0),
-        ];
-    }
-
-    // Sort by weight (then label)
-    usort($items, function ($a, $b) {
-        return [$a['weight'], $a['label']] <=> [$b['weight'], $b['label']];
-    });
-
-    return $items;
-}
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-if (empty($menuItems)) {
-    $menuItems = [
-        ['id'=>'home',     'label'=>'Home',     'url'=>'/index.php',     'icon'=>'bx bx-home-circle', 'weight'=>10],
-        ['id'=>'login',    'label'=>'Login',    'url'=>'/login.php',     'icon'=>'bx bx-user',        'weight'=>20],
-        ['id'=>'feedback', 'label'=>'Feedback', 'url'=>'/feedback.php',  'icon'=>'bx bx-chat',        'weight'=>30],
-        ['id'=>'bookings', 'label'=>'Bookings', 'url'=>'/bookings.php',  'icon'=>'bx bx-book-open',   'weight'=>40],
-        ['id'=>'about',    'label'=>'About',    'url'=>'/about.php',     'icon'=>'bx bx-info-square', 'weight'=>50],
-    ];
-}
-
-// Determine "active" item based on current path
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Smart Community Portal</title>
-    <link rel="stylesheet" href="./styles/styles.css" />
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Community Portal</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
 
 <body class="sb-expanded">
-    <!-- Navigation Section -->
-    <nav id="sidebar">
-        <ul>
-            <!-- Collapse/Expand -->
-            <li>
-                <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                    <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                    <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                </button>
-            </li>
+  <?= $nav->render($current) ?>
 
-            <!-- XML-driven menu -->
-            <?php foreach ($menuItems as $item):
-                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                $isActive = $target === $current || ($target === '' && $current === 'index.php');
-            ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
-    <!-- End Navigation Section -->
+  <main>
+    <h1>Welcome to CityLink Initiatives</h1>
+    <h2>Test</h2>
+    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. At aliquam itaque earum neque eaque cum laboriosam iure sit accusantium, amet illo error, optio debitis consectetur, eum vitae tempore corrupti. Veniam.</p>
+  </main>
 
-    <!-- Page Content -->
-    <main>
-        <h1>Welcome to CityLink Initiatives</h1>
-        <br />
-        <h2>Test</h2>
-        <p>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Blanditiis corporis dolore ad nostrum,
-            atque dolor ut, explicabo accusamus vel, omnis magni facere? Cum veritatis eligendi, impedit
-            voluptatum doloremque numquam! Perferendis?
-        </p>
-    </main>
-    <!-- End page content -->
-
-    <!-- Footer section -->
-    <footer>
-        &copy; 2025 CityLink Initiatives.
-        &nbsp;<a href="privacy.php">Privacy Policy</a>
-    </footer>
-
-    <script type="text/javascript" src="./js/script.js" defer></script>
+  <footer>
+    &copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
+  </footer>
+  <script src="./js/script.js" defer></script>
 </body>
 </html>

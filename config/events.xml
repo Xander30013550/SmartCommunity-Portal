@@ -1,17 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
   <eventlist id="primary">
+
     <event id="council-meeting">
-      <title>Local Council Meeting – Join the Discussion</title>
-      <description>Participate in council meetings and have your say on community projects.</description>
-      <date>2025-09-02 18:00–20:00</date>
+      <title>Local Council Meeting - Join the Discussion</title>
+      <description>Participate in the local council meetings and have your say on community projects, infrastructure developments, and local policy decisions. Your voice matters in shaping the future of our community.</description>
+      <date>2025-09-02 18:00-20:00</date>
       <location>City Hall, Chamber A</location>
+      <cta_label>RSVP Now</cta_label>
     </event>
+
     <event id="waste-collection">
-      <title>Waste Collection Schedule – Find Your Next Pick-Up</title>
-      <description>Check bin pick-up times and special recycling events.</description>
-      <date>2025-08-29 – 2025-09-30</date>
+      <title>Waste Collection Schedule - Find Your Next Pick-Up</title>
+      <description>Stay on top of waste collection days in your area. Check the schedule for bin pick-up times and any special recycling or green waste events.</description>
+      <date>2025-08-29 - 2025-09-30</date>
       <location>City-wide</location>
+      <cta_label>View Schedule</cta_label>
     </event>
+
+    <event id="community-gardening">
+      <title>Community Gardening Program - Sign Up for a Plot</title>
+      <description>Get involved in our community gardening program! Sign up for a plot in the local garden and contribute to growing fresh produce for our neighbourhood.</description>
+      <date>Ongoing</date>
+      <location>Community Garden</location>
+      <cta_label>Reserve Your Plot</cta_label>
+    </event>
+
+    <event id="neighbourhood-watch">
+      <title>Neighbourhood Watch Information Session</title>
+      <description>Join our Neighbourhood Watch program to help keep our community safe. Attend an info session to learn about safety initiatives, reporting suspicious activities, and getting involved in your local watch group.</description>
+      <date>2025-09-10 18:30</date>
+      <location>Community Centre</location>
+      <cta_label>Learn More</cta_label>
+    </event>
+
+    <event id="job-fair">
+      <title>Local Job Fair - Connecting Employers and Job Seekers</title>
+      <description>Looking for work? Join us at the Local Job Fair to meet potential employers and discover job opportunities in your area. Whether you’re looking for full-time, part-time, or casual work, this event is for you!</description>
+      <date>2025-09-15 09:00-16:00</date>
+      <location>Town Hall</location>
+      <cta_label>Register Now</cta_label>
+    </event>
+
+    <event id="health-check">
+      <title>Community Health Check - Free Medical Services</title>
+      <description>Take advantage of our free community health checks, including blood pressure, glucose tests, and health screenings. Get advice from local medical professionals on staying healthy.</description>
+      <date>2025-09-20 10:00-15:00</date>
+      <location>Health Clinic</location>
+      <cta_label>Book Your Appointment</cta_label>
+    </event>
+
+    <event id="youth-mentoring">
+      <title>Youth Mentoring Program - Apply to Be a Mentor or Mentee</title>
+      <description>Join the Youth Mentoring Program to help empower the next generation. Whether you’re interested in becoming a mentor or finding a mentor, this program fosters positive relationships and personal development for young people.</description>
+      <date>Applications open 2025-09-01</date>
+      <location>Youth Centre</location>
+      <cta_label>Apply Now</cta_label>
+    </event>
+
+    <event id="national-tree-day">
+      <title>National Tree Day - Volunteer to Plant Trees</title>
+      <description>Celebrate National Tree Day by volunteering to plant trees in our local parks and nature reserves. Help us make the community greener and more sustainable for future generations.</description>
+      <date>2025-09-28 08:00-12:00</date>
+      <location>City Park</location>
+      <cta_label>Sign Up to Volunteer</cta_label>
+    </event>
+
+    <event id="transport-updates">
+      <title>Public Transport Updates - Track Service Changes</title>
+      <description>Stay informed with real-time updates on bus, train, and tram schedules. Receive alerts for any disruptions, service changes, or delays, ensuring you always know the latest transport info.</description>
+      <date>Ongoing</date>
+      <location>Transport Hub</location>
+      <cta_label>View Updates</cta_label>
+    </event>
+
+    <event id="library-event">
+      <title>Public Library Event: Author Reading &amp; Book Launch</title>
+      <description>Attend a public library event featuring local authors and book launches. Meet the authors, participate in Q&amp;A sessions, and find your next great read.</description>
+      <date>2025-10-05 14:00</date>
+      <location>City Library</location>
+      <cta_label>RSVP Here</cta_label>
+    </event>
+
   </eventlist>
 </events>

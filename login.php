@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+<?php
+declare(strict_types=1);
 
-<!--
-    // -----------------------------------------------------------------------------
-    //  Copyright (c) 2025 SMT Students
-    //  All rights reserved.
-    // 
-    //  This file is part of Smart Community Portal (SCP).
-    //  Unauthorized copying of this file, via any medium is strictly prohibited.
-    //  Proprietary and confidential.
-    // 
-    //  Written by Michael McKIE, 2025
-    // -----------------------------------------------------------------------------
--->
+require __DIR__ . '/vendor/autoload.php';
+
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+?>
+
+<!DOCTYPE html>
 
 <html lang="en">
     <head>
@@ -24,59 +25,7 @@
 
     <!--    Main Section    -->
     <body class="sb-expanded">
-        <!--    Navigation Section      -->
-        <nav id="sidebar">
-            <ul>
-                <!--    Collapse/Expand   -->
-                <li>
-                    <button onclick=toggleSidebar() id="toggle-btn">
-                        <i id="icon-expand" class="bx bx-chevrons-right hidden"> </i>
-                        <i id="icon-collapse" class="bx bx-chevrons-left"> </i>
-                    </button>
-                </li>
-
-                <!--    Home    -->
-                <li class="active">
-                    <a href="./index.html">
-                        <i class="bx bx-home-circle"> </i>
-                        <span> Home </span>
-                    </a>
-                </li>
-
-                <!--    Login    -->
-                <li>
-                    <a href="./login.html">
-                        <i class="bx bx-user"> </i>
-                        <span> Login </span>
-                    </a>
-                </li>
-
-                <!--    Feedback    -->
-                <li>
-                    <a href="./feedback.html">
-                        <i class='bx  bx-chat'  ></i> 
-                        <span> Feedback </span>
-                    </a>
-                </li>
-
-                <!--    Bookings    -->
-                <li>
-                    <a href="./bookings.html">
-                        <i class="bx bx-book-open"> </i>
-                        <span> Bookings </span>
-                    </a>
-                </li>
-
-                <!--    About   -->
-                <li>
-                    <a href="./about.html">
-                        <i class="bx bx-info-square"> </i>
-                        <span> About </span>
-                    </a>
-                </li>
-            </ul>
-        </nav> <!--     End Navigation Section      -->
-        
+        <?= $nav->render($current) ?>
         <!--    Page Content    -->
         <main>
             <section>
@@ -110,7 +59,7 @@
         <!--    Footer section      -->
         <Footer>
             &copy; 2025 CityLink Initiatives. &nbsp;
-            <a href="privacy.html"> Privacy Policy </a>
+            <a href="privacy.php"> Privacy Policy </a>
         </Footer>
 
         <script type="text/javascript" src="./js/script.js" defer></script>
