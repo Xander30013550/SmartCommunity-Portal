@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
-    <event id='primary'>
-        <title></title>
-        <description></description>
-        <date></date>
-        <location></location>
+  <eventlist id="primary">
+    <event id="council-meeting">
+      <title>Local Council Meeting – Join the Discussion</title>
+      <description>Participate in council meetings and have your say on community projects.</description>
+      <date>2025-09-02 18:00–20:00</date>
+      <location>City Hall, Chamber A</location>
     </event>
+    <event id="waste-collection">
+      <title>Waste Collection Schedule – Find Your Next Pick-Up</title>
+      <description>Check bin pick-up times and special recycling events.</description>
+      <date>2025-08-29 – 2025-09-30</date>
+      <location>City-wide</location>
+    </event>
+  </eventlist>
 </events>

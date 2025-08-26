@@ -60,17 +60,63 @@ function getPrimaryMenuItems(string $menusPath): array
 function getEventItems(string $eventsPath): array
 {
     $xml = loadXml($eventsPath);
+    if (!$xml)
+        return [];
+
+    // Pick the first <eventlist> or the one with id="primary"
+    $list = $xml->eventlist ?? null;
+    if (!$list && isset($xml->eventlist)) {
+        foreach ($xml->eventlist as $candidate) {
+            if ((string) ($candidate['id'] ?? '') === 'primary') {
+                $list = $candidate;
+                break;
+            }
+        }
+        // If still null, default to the first one
+        if (!$list && isset($xml->eventlist[0]))
+            $list = $xml->eventlist[0];
+    }
+
+    if (!$list)
+        return [];
+
     $events = [];
-    foreach ($xml->eventlist->event as $node) {
+    foreach ($list->event as $node) {
         $events[] = [
-            'id' => (string) $node['id'],
-            'title' => (string) $node->title,
-            'description' => (string) $node->description,
-            'date' => (string) $node->date,
-            'location' => (string) $node->location,
+            'id' => (string) ($node['id'] ?? ''),
+            'title' => trim((string) ($node->title ?? 'Untitled Event')),
+            'description' => trim((string) ($node->description ?? '')),
+            'date' => trim((string) ($node->date ?? '')),
+            'location' => trim((string) ($node->location ?? '')),
         ];
     }
+
+    // Optional: sort by date if it’s ISO-like
+    usort($events, function ($a, $b) {
+        return strcmp($a['date'], $b['date']);
+    });
+
     return $events;
+}
+function renderEventItem(array $e): void
+{
+    $when = $e['date'] !== '' ? e($e['date']) : 'TBA';
+    $loc = $e['location'] !== '' ? ' · ' . e($e['location']) : '';
+    // You don't have a CTA in XML yet; we can derive a default route using id
+    $ctaUrl = $e['id'] !== '' ? '/events/view.php?id=' . rawurlencode($e['id']) : '#';
+    $ctaLabel = 'Learn More';
+    ?>
+    <div class="event-item">
+        <div>
+            <strong><?= e($e['title']) ?></strong><br>
+            <small><?= $when . $loc ?></small><br>
+            <?php if ($e['description'] !== ''): ?>
+                Description: <?= e($e['description']) ?>
+            <?php endif; ?>
+        </div>
+        <a class="uniform-button" href="<?= e($ctaUrl) ?>"><?= e($ctaLabel) ?></a>
+    </div>
+    <?php
 }
 $menusPath = __DIR__ . '/config/menus.xml';
 $menuItems = getPrimaryMenuItems($menusPath);
@@ -88,7 +134,7 @@ $eventsPath = __DIR__ . '/config/events.xml';
 $eventsItems = getEventItems($eventsPath);
 if (empty($eventsItems)) {
     $eventsItems = [
-
+        ['id' => 'Event1', 'title' => 'Event1', 'description' => 'words', 'date' => 'never', 'location' => 'nowhere'],
     ];
 }
 
@@ -142,17 +188,9 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
 
         <div class="upcoming-events">
             <h2>Upcoming Events</h2>
-            <?php foreach ($menuItems as $item):
-                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
+            <?php foreach ($eventsItems as $ev) {
+                renderEventItem($ev);
+            } ?>
         </div>
 
 
