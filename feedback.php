@@ -1,15 +1,20 @@
 <?php
 declare(strict_types=1);
 libxml_use_internal_errors(true);
+require __DIR__ . '/vendor/autoload.php';
+
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 
 function e(string $s): string
 {
     return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 }
-
-/**
- * Load and parse an XML file safely. Returns SimpleXMLElement|null.
- */
 function loadXml(string $path): ?SimpleXMLElement
 {
     if (!is_file($path))
@@ -17,54 +22,54 @@ function loadXml(string $path): ?SimpleXMLElement
     $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
     return $xml !== false ? $xml : null;
 }
-function getPrimaryMenuItems(string $menusPath): array
+
+
+function getFaqItems(string $faqPath): array
 {
-    $xml = loadXml($menusPath);
+    $xml = loadXml($faqPath);
     if (!$xml)
         return [];
 
-    // If you use namespaces later, switch to XPath with registerXPathNamespace(...)
-    $menu = $xml->menu; // assumes only one primary menu
-    if (!$menu) {
-        // Try to find <menu id="primary"> if multiple menus exist
-        foreach ($xml->menu as $m) {
-            if ((string) ($m['id'] ?? '') === 'primary') {
-                $menu = $m;
+    // Pick the first FAQList (or the one with id="primary")
+    $list = $xml->FAQList ?? null;
+    if (!$list && isset($xml->FAQList)) {
+        foreach ($xml->FAQList as $candidate) {
+            if ((string) ($candidate['id'] ?? '') === 'primary') {
+                $list = $candidate;
                 break;
             }
         }
+        if (!$list && isset($xml->FAQList[0])) {
+            $list = $xml->FAQList[0];
+        }
     }
-    if (!$menu)
+    if (!$list)
         return [];
 
-    // Normalize each <item> into an array
-    $items = [];
-    foreach ($menu->item as $item) {
-        $items[] = [
-            'id' => (string) ($item['id'] ?? ''),
-            'label' => trim((string) ($item->label ?? 'Untitled')),
-            'url' => trim((string) ($item->url ?? '#')),
-            'icon' => trim((string) ($item->icon ?? 'bx bx-link')),
-            'weight' => (int) ($item['weight'] ?? 0),
+    $faqs = [];
+    foreach ($list->FAQ as $node) {
+        $faqs[] = [
+            'id' => (string) ($node['id'] ?? ''),
+            'summary' => trim((string) ($node->summary ?? 'Untitled question')),
+            'description' => trim((string) ($node->description ?? '')),
         ];
     }
 
-    // Sort by weight (then label)
-    usort($items, function ($a, $b) {
-        return [$a['weight'], $a['label']] <=> [$b['weight'], $b['label']];
-    });
+    // Keep XML order, or sort by summary if you prefer:
+    // usort($faqs, fn($a,$b) => strcmp($a['summary'], $b['summary']));
 
-    return $items;
+    return $faqs;
 }
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-if (empty($menuItems)) {
-    $menuItems = [
-        ['id' => 'home', 'label' => 'Home', 'url' => '/index.php', 'icon' => 'bx bx-home-circle', 'weight' => 10],
-        ['id' => 'login', 'label' => 'Login', 'url' => '/login.php', 'icon' => 'bx bx-user', 'weight' => 20],
-        ['id' => 'feedback', 'label' => 'Feedback', 'url' => '/feedback.php', 'icon' => 'bx bx-chat', 'weight' => 30],
-        ['id' => 'bookings', 'label' => 'Bookings', 'url' => '/bookings.php', 'icon' => 'bx bx-book-open', 'weight' => 40],
-        ['id' => 'about', 'label' => 'About', 'url' => '/about.php', 'icon' => 'bx bx-info-square', 'weight' => 50],
+
+$faqPath = __DIR__ . '/config/faqs.xml';
+$faqItems = getFaqItems($faqPath);
+if (empty($faqItems)) {
+    $faqItems = [
+        [
+            'id' => 'placeholder',
+            'summary' => 'No FAQs available yet',
+            'description' => 'Check back soon or contact support if you need help.',
+        ]
     ];
 }
 
@@ -87,31 +92,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
 <!--    Main Section    -->
 
 <body class="sb-expanded">
-
-    <nav id="sidebar">
-        <ul>
-            <!-- Collapse/Expand -->
-            <li>
-                <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                    <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                    <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                </button>
-            </li>
-
-            <!-- XML-driven menu -->
-            <?php foreach ($menuItems as $item):
-                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $nav->render($current) ?>
     <!--    Page Content    -->
     <main>
         <h1> Welcome to CityLink Initiatives </h1><br>
@@ -153,71 +134,12 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
             <div class="column">
                 <div id="faq-container" class="faq-container">
                     <h2>Frequently Asked Questions</h2>
-
-                    <details>
-                        <summary>How can I book a community event?</summary>
-                        <p>To book a community event, simply visit the "Event Bookings" section on the portal, select
-                            your desired event, and follow the prompts to complete the booking process. You'll receive a
-                            confirmation email with event details.</p>
-                    </details>
-
-                    <details>
-                        <summary>What should I do if I have a problem with waste collection?</summary>
-                        <p>If you encounter any issues with waste collection, head to the "Waste Management" section on
-                            the portal and fill out the service request form. Our team will get back to you with a
-                            resolution as soon as possible.</p>
-                    </details>
-
-                    <details>
-                        <summary>How can I submit feedback about CityLink services?</summary>
-                        <p>You can submit feedback through the "Feedback" section of the portal. Just fill out the form
-                            with your comments or suggestions, and we'll review it to help improve our services.</p>
-                    </details>
-
-                    <details>
-                        <summary>Can I access my user profile information?</summary>
-                        <p>Yes, you can access and update your user profile through the "User Profile" section. Here,
-                            you can view your contact details, service bookings, and any past feedback you’ve submitted.
-                        </p>
-                    </details>
-
-                    <details>
-                        <summary>Are there any volunteer opportunities available in my community?</summary>
-                        <p>Yes, we frequently post volunteer opportunities in the "Volunteering Opportunities" section.
-                            You can browse through different roles and apply directly through the portal.</p>
-                    </details>
-
-                    <details>
-                        <summary>How do I get information about my rates or local taxes?</summary>
-                        <p>To get information about rates or taxes, visit the "Rates Enquiries" section on the portal.
-                            You’ll be able to find relevant information about payments, deadlines, and any related
-                            inquiries.</p>
-                    </details>
-
-                    <details>
-                        <summary>How can I stay updated on important community announcements?</summary>
-                        <p>Stay updated by checking the "Public Announcements" section regularly. You can also subscribe
-                            to email notifications to receive the latest announcements directly in your inbox.</p>
-                    </details>
-
-                    <details>
-                        <summary>What is the process for submitting a service request?</summary>
-                        <p>To submit a service request, navigate to the "Service Requests" section. Select the type of
-                            service you need, fill out the form with your details, and our team will handle your request
-                            promptly.</p>
-                    </details>
-
-                    <details>
-                        <summary>Is the CityLink portal mobile-friendly?</summary>
-                        <p>Yes, the CityLink portal is fully optimized for mobile use, allowing you to access all
-                            services, make bookings, and manage your profile on-the-go.</p>
-                    </details>
-
-                    <details>
-                        <summary>How do I update my personal contact information?</summary>
-                        <p>To update your personal contact information, log in to your user profile and edit the details
-                            under "Account Settings." Your changes will be saved immediately.</p>
-                    </details>
+                    <?php foreach ($faqItems as $faq): ?>
+                        <details <?= $faq['id'] ? 'id="' . e($faq['id']) . '"' : '' ?>>
+                            <summary><?= e($faq['summary']) ?></summary>
+                            <p><?= nl2br(e($faq['description'])) ?></p>
+                        </details>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -226,7 +148,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <!--    Footer section      -->
     <Footer>
         &copy; 2025 CityLink Initiatives. &nbsp;
-        <a href="privacy.html"> Privacy Policy </a>
+        <a href="privacy.php"> Privacy Policy </a>
     </Footer>
 
     <script type="text/javascript" src="./js/script.js" defer></script>
