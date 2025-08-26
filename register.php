@@ -59,29 +59,39 @@ if (empty($menuItems)) {
 
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header('Location: login.php');
-    exit;
-}
-
 $errors = [];
-$login = '';
+$name = '';
+$email = '';
 $password = '';
+$confirm_password = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login = trim($_POST['login'] ?? '');
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
-    if ($login === '') {
-        $errors['login'] = 'Email or Username is required.';
+    if ($name === '') {
+        $errors['name'] = 'Name is required.';
     }
-
+    if ($email === '') {
+        $errors['email'] = 'Email is required.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Invalid email format.';
+    }
     if ($password === '') {
         $errors['password'] = 'Password is required.';
+    } elseif (strlen($password) < 6) {
+        $errors['password'] = 'Password must be at least 6 characters.';
+    }
+    if ($confirm_password === '') {
+        $errors['confirm_password'] = 'Please confirm your password.';
+    } elseif ($password !== $confirm_password) {
+        $errors['confirm_password'] = 'Passwords do not match.';
     }
 
     if (empty($errors)) {
+        // Connect to DB
         $host = 'localhost';
         $db = 'citylink_users';
         $user = 'root';
@@ -97,21 +107,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo = new PDO($dsn, $user, $pass, $options);
 
-            // Search by email or username
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR name = ?");
-            $stmt->execute([$login, $login]);
-            $userRecord = $stmt->fetch();
+            // Check if email or name exists
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR name = ?");
+            $stmt->execute([$email, $name]);
+            if ($stmt->fetch()) {
+                $errors['general'] = 'Email or username already exists.';
+            } else {
+                // Insert user
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+                $stmt->execute([$name, $email, $hashedPassword]);
 
-            if ($userRecord && password_verify($password, $userRecord['password'])) {
+                // Redirect to login or auto-login
                 $_SESSION['user'] = [
-                    'id' => $userRecord['id'],
-                    'name' => $userRecord['name'],
-                    'email' => $userRecord['email']
+                    'id' => $pdo->lastInsertId(),
+                    'name' => $name,
+                    'email' => $email
                 ];
                 header('Location: index.php');
                 exit;
-            } else {
-                $errors['general'] = 'Invalid credentials.';
             }
         } catch (PDOException $e) {
             $errors['general'] = 'Database error: ' . e($e->getMessage());
@@ -126,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Login - Smart Community Portal</title>
+        <title>Register - Smart Community Portal</title>
         <link rel="stylesheet" href="./styles/styles.css" />
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     </head>
@@ -155,33 +169,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
 
         <main>
+            
             <?php if (!empty($errors['general'])): ?>
                 <div class="error"><?= e($errors['general']) ?></div>
             <?php endif; ?>
-            <form method="POST" action="login.php" novalidate>
+
+            <form method="POST" action="register.php" novalidate>
                 <!--    Company logo    -->
                 <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Two overlapping purple square outlines with a three-dimensional appearance, forming a layered geometric design." />
 
-                <h1>Login</h1> 
+                <h1>Register</h1>
 
-                <div>
-                    <label for="login">Email or Username</label><br />
-                    <input type="text" id="login" name="login" value="<?= e($login) ?>" required />
-                    <?php if (!empty($errors['login'])): ?>
-                        <div class="error"><?= e($errors['login']) ?></div>
-                    <?php endif; ?>
-                </div>
+                <label for="name">Username</label>
+                <input type="text" id="name" name="name" value="<?= e($name) ?>" required />
+                <?php if (!empty($errors['name'])): ?>
+                    <div class="error"><?= e($errors['name']) ?></div>
+                <?php endif; ?>
 
-                <div>
-                    <label for="password">Password</label><br />
-                    <input type="password" id="password" name="password" required />
-                    <?php if (!empty($errors['password'])): ?>
-                        <div class="error"><?= e($errors['password']) ?></div>
-                    <?php endif; ?>
-                </div>
-                <button type="submit">Login</button>
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" value="<?= e($email) ?>" required />
+                <?php if (!empty($errors['email'])): ?>
+                    <div class="error"><?= e($errors['email']) ?></div>
+                <?php endif; ?>
 
-                <p> Don't have an account? <a href="register.php"> Register here</a>. </p>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="6" />
+                <?php if (!empty($errors['password'])): ?>
+                    <div class="error"><?= e($errors['password']) ?></div>
+                <?php endif; ?>
+                
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
+                <?php if (!empty($errors['confirm_password'])): ?>
+                    <div class="error"><?= e($errors['confirm_password']) ?></div>
+                <?php endif; ?>
+                
+                <button type="submit">Register</button>
+                <p>Already registered? <a href="login.php">Login here</a>.</p>
             </form>            
         </main>
 
