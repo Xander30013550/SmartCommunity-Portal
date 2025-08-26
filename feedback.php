@@ -112,7 +112,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
 
                     <label for="subject"> Subject: </label>
                     <select id="subject" name="subject" required>
-                        <option value="select">Please Select...</option>
+                        <option value="" disabled selected>Please Select...</option>
                         <option value="eventBookings">Event Bookings</option>
                         <option value="wasteManagement">Waste Management</option>
                         <option value="communityPrograms">Community Programs</option>
@@ -129,6 +129,21 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
 
                     <button type="submit"> Submit </button>
                 </form>
+
+                <!--    Modal Feedback Popup    -->
+                <div id="successModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span id="closeModal" class="close">&times;</span>
+                    <div class="tick">&#10004;</div>
+                    <h2>Your Form Has Been Successfully Submitted</h2>
+                    <p>Look forward to hearing from us soon!</p>
+
+                    <!-- Toggle form info button -->
+                    <button id="toggleInfoBtn">Show/Hide Form Info</button>
+                    <div id="formInfo" style="display:none; margin-top:10px; text-align:left;"></div>
+                </div>
+                </div>
+
             </div>
 
             <div class="column">
