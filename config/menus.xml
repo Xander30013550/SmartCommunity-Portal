@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+  <menu id="primary">
+    <item id="home" weight="10">
+      <label>Home</label>
+      <url>/index.php</url>
+      <icon>bx bx-home-circle</icon>
+    </item>
+    <item id="login" weight="20">
+      <label>Login</label>
+      <url>./login.php</url>
+      <icon>bx bx-user</icon>
+    </item>
+    <item id="feedback" weight="30">
+      <label>Feedback</label>
+      <url>/feedback.php</url>
+      <icon>bx bx-chat</icon>
+    </item>
+    <item id="bookings" weight="40">
+      <label>Bookings</label>
+      <url>/bookings.php</url>
+      <icon>bx bx-book-open</icon>
+    </item>
+    <item id="about" weight="50">
+      <label>About</label>
+      <url>/about.php</url>
+      <icon>bx bx-info-square</icon>
+    </item>
+  </menu>
+</menus>
