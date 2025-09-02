@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<announcements>
+  <announcement id="1">
+    <title>Scheduled Maintenance</title>
+    <message>Hearthdeep server will reboot at 02:00 UTC.</message>
+    <link></link>
+    <date>2025-09-02</date>
+  </announcement>
+
+  <announcement id="2">
+    <title>New Release</title>
+    <message></message>
+    <link></link>
+    <date>2025-09-01</date>
+  </announcement>
+
+  <announcement id="3">
+    <title>Meeting Update</title>
+    <message>Sprint review has been moved to Tuesday, 3pm.</message>
+    <link>https://example.com/calendar</link>
+    <date>2025-08-30</date>
+    <priority>low</priority>
+  </announcement>
+</announcements>
