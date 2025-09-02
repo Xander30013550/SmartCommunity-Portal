@@ -1,38 +1,91 @@
 <?php
 declare(strict_types=1);
+session_start();
+libxml_use_internal_errors(true);
 
-require __DIR__ . '/vendor/autoload.php';
+require_once 'functions.php';
+require_once 'auth.php';
 
-use App\Menu\MenuRepository;
-use App\Menu\NavRenderer;
+$menusPath = __DIR__ . '/config/menus.xml';
+$menuItems = getPrimaryMenuItems($menusPath);
+if (empty($menuItems)) {
+    $menuItems = [
+        ['id' => 'home', 'label' => 'Home', 'url' => '/index.php', 'icon' => 'bx bx-home-circle', 'weight' => 10],
+        ['id' => 'login', 'label' => 'Login', 'url' => '/login.php', 'icon' => 'bx bx-user', 'weight' => 20],
+        ['id' => 'register', 'label' => 'Register', 'url' => '/register.php', 'icon' => 'bx bx-user-plus', 'weight' => 25],
+        ['id' => 'feedback', 'label' => 'Feedback', 'url' => '/feedback.php', 'icon' => 'bx bx-chat', 'weight' => 30],
+        ['id' => 'bookings', 'label' => 'Bookings', 'url' => '/bookings.php', 'icon' => 'bx bx-book-open', 'weight' => 40],
+        ['id' => 'about', 'label' => 'About', 'url' => '/about.php', 'icon' => 'bx bx-info-square', 'weight' => 50],
+    ];
+}
 
-$menuRepo = new MenuRepository(__DIR__ . '/config');
-$nav      = new NavRenderer($menuRepo);
+$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+$user = $_SESSION['user'] ?? null;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart Community Portal</title>
-  <link rel="stylesheet" href="./styles/styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Smart Community Portal</title>
+        <link rel="stylesheet" href="./styles/styles.css" />
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    </head>
 
-<body class="sb-expanded">
-  <?= $nav->render($current) ?>
+    <body class="sb-expanded">
+        <nav id="sidebar">
+            <ul>
+                <li>
+                    <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
+                        <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
+                        <i id="icon-collapse" class="bx bx-chevrons-left"></i>
+                    </button>
+                </li>
+                <?php foreach ($menuItems as $item):
+                    $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
+                    $isActive = $target === $current || ($target === '' && $current === 'index.php');
+                ?>
+                <li class="<?= $isActive ? 'active' : '' ?>">
+                    <a href="<?= e($item['url']) ?>">
+                        <i class="<?= e($item['icon']) ?>"></i>
+                        <span><?= e($item['label']) ?></span>
+                    </a>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </nav>
 
-  <main>
-    <h1>Welcome to CityLink Initiatives</h1>
-    <h2>Test</h2>
-    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. At aliquam itaque earum neque eaque cum laboriosam iure sit accusantium, amet illo error, optio debitis consectetur, eum vitae tempore corrupti. Veniam.</p>
-  </main>
+        <main>
+            <h1>Welcome to CityLink Initiatives</h1>
+            <?php if ($user): ?>
+                <p>Hello, <?= e($user['name']) ?>!</p>
+                <form method="GET" action="index.php" style="margin-top:20px;">
+                    <button type="submit" name="logout" value="1" style="padding:10px 20px; font-size:1rem;">
+                        <i class="bx bx-log-out"></i> Logout
+                    </button>
+                </form>
+            <?php else: ?>
+                <p>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Blanditiis corporis dolore ad nostrum,
+                    atque dolor ut, explicabo accusamus vel, omnis magni facere? Cum veritatis eligendi, impedit
+                    voluptatum doloremque numquam! Perferendis?
+                </p>
+            <?php endif; ?>
+        </main>
 
-  <footer>
-    &copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
-  </footer>
-  <script src="./js/script.js" defer></script>
-</body>
+        <footer>
+            &copy; 2025 CityLink Initiatives.
+            &nbsp;<a href="privacy.php">Privacy Policy</a>
+        </footer>
+
+        <script type="text/javascript" src="./js/script.js" defer></script>
+    </body>
 </html>
