@@ -7,12 +7,13 @@ use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
-$nav      = new NavRenderer($menuRepo);
+$nav = new NavRenderer($menuRepo);
 
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,7 +28,19 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
   <main>
     <h1>Welcome to CityLink Initiatives</h1>
     <h2>Test</h2>
-    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. At aliquam itaque earum neque eaque cum laboriosam iure sit accusantium, amet illo error, optio debitis consectetur, eum vitae tempore corrupti. Veniam.</p>
+    <div class="annbar" data-interval="4000" data-duration="600">
+
+      <div class="annbar-viewport" role="region" aria-label="Site announcements">
+        <ul class="annbar-track">
+          <!-- These <li> will be rendered by PHP or hardcoded -->
+          <li class="annbar-slide"><a href="#">Maintenance: Server reboot at 02:00 UTC.</a></li>
+          <li class="annbar-slide"><a href="#">New build: Frontend framework v1.2 shipped</a></li>
+        </ul>
+      </div>
+
+      <!-- Screen reader live updates -->
+      <span class="annbar-sr" aria-live="polite"></span>
+    </div>
   </main>
 
   <footer>
@@ -35,4 +48,5 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
   </footer>
   <script src="./js/script.js" defer></script>
 </body>
+
 </html>
