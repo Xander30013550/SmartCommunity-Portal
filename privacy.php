@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-<<<<<<< HEAD
 
 require __DIR__ . '/vendor/autoload.php';
 use App\Menu\MenuRepository;
@@ -8,7 +7,7 @@ use App\Menu\NavRenderer;
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav      = new NavRenderer($menuRepo);
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
-=======
+
 session_start();
 libxml_use_internal_errors(true);
 
@@ -37,7 +36,7 @@ if (isset($_GET['logout'])) {
 }
 
 $user = $_SESSION['user'] ?? null;
->>>>>>> Michael-Dev
+
 ?>
 
 <!DOCTYPE html>
@@ -50,12 +49,11 @@ $user = $_SESSION['user'] ?? null;
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     </head>
 
-<<<<<<< HEAD
     <!--    Main Section    -->
     <body class="sb-expanded">        
         <!--    Navigation Section      -->
         <?= $nav->render($current) ?>
-=======
+
     <body class="sb-expanded">
         <nav id="sidebar">
             <ul>
@@ -79,7 +77,6 @@ $user = $_SESSION['user'] ?? null;
             </ul>
         </nav>
 
->>>>>>> Michael-Dev
         <!--    Page Content    -->
         <main>
             <h1>Privacy Policy</h1>
@@ -176,19 +173,15 @@ $user = $_SESSION['user'] ?? null;
             </div>
         </main> <!--    End page content    -->
 
-<<<<<<< HEAD
         <!--    Footer section      -->
         <Footer>
             &copy; 2025 CityLink Initiatives. &nbsp;
             <a href="privacy.php"> Privacy Policy </a>
         </Footer>
-=======
         <footer>
             &copy; 2025 CityLink Initiatives.
             &nbsp;<a href="privacy.php">Privacy Policy</a>
         </footer>
->>>>>>> Michael-Dev
-
         <script type="text/javascript" src="./js/script.js" defer></script>
     </body>
 </html>
