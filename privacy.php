@@ -7,6 +7,36 @@ use App\Menu\NavRenderer;
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav      = new NavRenderer($menuRepo);
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+
+session_start();
+libxml_use_internal_errors(true);
+
+require_once 'functions.php';
+require_once 'auth.php';
+
+$menusPath = __DIR__ . '/config/menus.xml';
+$menuItems = getPrimaryMenuItems($menusPath);
+if (empty($menuItems)) {
+    $menuItems = [
+        ['id' => 'home', 'label' => 'Home', 'url' => '/index.php', 'icon' => 'bx bx-home-circle', 'weight' => 10],
+        ['id' => 'login', 'label' => 'Login', 'url' => '/login.php', 'icon' => 'bx bx-user', 'weight' => 20],
+        ['id' => 'register', 'label' => 'Register', 'url' => '/register.php', 'icon' => 'bx bx-user-plus', 'weight' => 25],
+        ['id' => 'feedback', 'label' => 'Feedback', 'url' => '/feedback.php', 'icon' => 'bx bx-chat', 'weight' => 30],
+        ['id' => 'bookings', 'label' => 'Bookings', 'url' => '/bookings.php', 'icon' => 'bx bx-book-open', 'weight' => 40],
+        ['id' => 'about', 'label' => 'About', 'url' => '/about.php', 'icon' => 'bx bx-info-square', 'weight' => 50],
+    ];
+}
+
+$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
+
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+$user = $_SESSION['user'] ?? null;
+
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +44,7 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> Smart Community Portal </title>
+        <title>Smart Community Portal</title>
         <link rel="stylesheet" href="./styles/styles.css" />
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     </head>
@@ -23,6 +53,7 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
     <body class="sb-expanded">        
         <!--    Navigation Section      -->
         <?= $nav->render($current) ?>
+
         <!--    Page Content    -->
         <main>
             <h1>Privacy Policy</h1>
@@ -120,11 +151,10 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
         </main> <!--    End page content    -->
 
         <!--    Footer section      -->
-        <Footer>
-            &copy; 2025 CityLink Initiatives. &nbsp;
-            <a href="privacy.php"> Privacy Policy </a>
-        </Footer>
-
+        <footer>
+            &copy; 2025 CityLink Initiatives.
+            &nbsp;<a href="privacy.php">Privacy Policy</a>
+        </footer>
         <script type="text/javascript" src="./js/script.js" defer></script>
     </body>
 </html>

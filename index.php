@@ -1,16 +1,24 @@
 <?php
 declare(strict_types=1);
+session_start();
+libxml_use_internal_errors(true);
 
-require __DIR__ . '/vendor/autoload.php';
-
-use App\Menu\MenuRepository;
-use App\Menu\NavRenderer;
+require_once 'functions.php';
+require_once 'auth.php';
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
+$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+$user = $_SESSION['user'] ?? null;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,5 +56,4 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
   </footer>
   <script src="./js/script.js" defer></script>
 </body>
-
 </html>
