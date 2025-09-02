@@ -54,29 +54,6 @@ $user = $_SESSION['user'] ?? null;
         <!--    Navigation Section      -->
         <?= $nav->render($current) ?>
 
-    <body class="sb-expanded">
-        <nav id="sidebar">
-            <ul>
-                <li>
-                    <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                        <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                        <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                    </button>
-                </li>
-                <?php foreach ($menuItems as $item):
-                    $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                    $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </nav>
-
         <!--    Page Content    -->
         <main>
             <h1>Privacy Policy</h1>
@@ -174,10 +151,6 @@ $user = $_SESSION['user'] ?? null;
         </main> <!--    End page content    -->
 
         <!--    Footer section      -->
-        <Footer>
-            &copy; 2025 CityLink Initiatives. &nbsp;
-            <a href="privacy.php"> Privacy Policy </a>
-        </Footer>
         <footer>
             &copy; 2025 CityLink Initiatives.
             &nbsp;<a href="privacy.php">Privacy Policy</a>
