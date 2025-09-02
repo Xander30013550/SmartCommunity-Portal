@@ -1,5 +1,13 @@
 <?php
 declare(strict_types=1);
+
+require __DIR__ . '/vendor/autoload.php';
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+
 session_start();
 libxml_use_internal_errors(true);
 
@@ -28,6 +36,7 @@ if (isset($_GET['logout'])) {
 }
 
 $user = $_SESSION['user'] ?? null;
+
 ?>
 
 <!DOCTYPE html>
@@ -40,28 +49,10 @@ $user = $_SESSION['user'] ?? null;
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     </head>
 
-    <body class="sb-expanded">
-        <nav id="sidebar">
-            <ul>
-                <li>
-                    <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                        <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                        <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                    </button>
-                </li>
-                <?php foreach ($menuItems as $item):
-                    $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                    $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </nav>
+    <!--    Main Section    -->
+    <body class="sb-expanded">        
+        <!--    Navigation Section      -->
+        <?= $nav->render($current) ?>
 
         <!--    Page Content    -->
         <main>
@@ -159,11 +150,11 @@ $user = $_SESSION['user'] ?? null;
             </div>
         </main> <!--    End page content    -->
 
+        <!--    Footer section      -->
         <footer>
             &copy; 2025 CityLink Initiatives.
             &nbsp;<a href="privacy.php">Privacy Policy</a>
         </footer>
-
         <script type="text/javascript" src="./js/script.js" defer></script>
     </body>
 </html>
