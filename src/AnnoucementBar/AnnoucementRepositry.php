@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\AnnoucementBar;
 
-final class AnnoucementRepositry {
+final class annoucementRepositry {
     public function __construct(private readonly string $configDir) {}
 
     /** @return array<int,array{id:string,label:string,url:string,icon:string,weight:int}> */
