@@ -5,6 +5,10 @@ libxml_use_internal_errors(true);
 
 require_once 'functions.php';
 require_once 'auth.php';
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
@@ -35,7 +39,6 @@ $user = $_SESSION['user'] ?? null;
 
   <main>
     <h1>Welcome to CityLink Initiatives</h1>
-    <h2>Test</h2>
     <div class="annbar" data-interval="4000" data-duration="600">
 
       <div class="annbar-viewport" role="region" aria-label="Site announcements">
