@@ -5,7 +5,11 @@ require_once 'auth.php';
 // Check if already logged in
 session_start();
 if (isset($_SESSION['user'])) {
-    header('Location: index.php');
+    if ($_SESSION['user']['role'] === 'admin') {
+        header('Location: admin.php');
+    } else {
+        header('Location: user_home.php');
+    }
     exit;
 }
 
@@ -26,16 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name === '') {
         $errors['name'] = 'Name is required.';
     }
+
     if ($email === '') {
         $errors['email'] = 'Email is required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Invalid email format.';
     }
+
     if ($password === '') {
         $errors['password'] = 'Password is required.';
     } elseif (strlen($password) < 6) {
         $errors['password'] = 'Password must be at least 6 characters.';
     }
+
     if ($confirm_password === '') {
         $errors['confirm_password'] = 'Please confirm your password.';
     } elseif ($password !== $confirm_password) {
@@ -95,19 +102,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error"><?= e($errors['general']) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="register.php" novalidate>
+            <form method="POST" action="register.php" novalidate>           
                 <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Logo" />
 
                 <h1>Register</h1>
 
                 <label for="name">Username</label>
-                <input type="text" id="name" name="name" value="<?= e($name) ?>" required />
+                <input type="text" id="name" name="name" value="<?php echo $username; ?>" required />
                 <?php if (!empty($errors['name'])): ?>
                     <div class="error"><?= e($errors['name']) ?></div>
                 <?php endif; ?>
 
                 <label for="email">Email address</label>
-                <input type="email" id="email" name="email" value="<?= e($email) ?>" required />
+                <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
                 <?php if (!empty($errors['email'])): ?>
                     <div class="error"><?= e($errors['email']) ?></div>
                 <?php endif; ?>
