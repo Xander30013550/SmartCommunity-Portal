@@ -12,13 +12,17 @@ function registerUser(string $name, string $email, string $password): array {
 
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = db()->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $email, $hashedPassword]);
+
+        $role = 'user'; 
+
+        $stmt = db()->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$name, $email, $hashedPassword, $role]);
         
         return [
             'id' => db()->lastInsertId(),
             'name' => $name,
-            'email' => $email
+            'email' => $email,
+            'role' => $role
         ];
     }
 
@@ -35,6 +39,7 @@ function loginUser(string $login, string $password): ?array {
             'id' => $userRecord['id'],
             'name' => $userRecord['name'],
             'email' => $userRecord['email'],
+            'role' => $userRecord['role']
         ];
     }
     

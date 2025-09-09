@@ -6,7 +6,11 @@ session_start();
 libxml_use_internal_errors(true);
 
 if (isset($_SESSION['user'])) {
-    header('Location: index.php');
+    if ($_SESSION['user']['role'] === 'admin') {
+        header('Location: admin.php');
+    } else {
+        header('Location: user_home.php');
+    }
     exit;
 }
 
@@ -51,7 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = loginUser($login, $password);
         if ($user) {
             $_SESSION['user'] = $user;
-            header('Location: index.php');
+
+            if ($user['role'] === 'admin'){
+                header('Location: admin.php');
+            } else {
+                header('Location: user_home.php');
+            }
+
             exit;
         } else {
             $errors['general'] = 'Invalid credentials.';
