@@ -7,6 +7,37 @@ require __DIR__ . '/vendor/autoload.php';
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
+// Saves Event on Selected Event button click
+$eventsPath  = __DIR__ . '/config/events.xml';
+$eventsItems = getEventItems($eventsPath);
+
+// If xml is empty, fills default values
+if (empty($eventsItems)) {
+    $eventsItems = [
+        [
+            'id' => 'Event1',
+            'title' => 'Event1',
+            'description' => 'words',
+            'date' => 'never',
+            'location' => 'nowhere'
+        ],
+    ];
+}
+
+// Error Catch in case selected event was null
+$selectedEventId = $_GET['event'] ?? null;
+$selectedEvent   = null;
+
+if ($selectedEventId !== null) {
+    foreach ($eventsItems as $ev) {
+        if ((string)($ev['id'] ?? '') === (string)$selectedEventId) {
+            $selectedEvent = $ev;
+            break;
+        }
+    }
+}
+
+
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav      = new NavRenderer($menuRepo);
 
@@ -67,8 +98,8 @@ function renderEventItem(array $e): void
     $when = $e['date'] !== '' ? e($e['date']) : 'TBA';
     $loc = $e['location'] !== '' ? ' · ' . e($e['location']) : '';
     // You don't have a CTA in XML yet; we can derive a default route using id
-    $ctaUrl = $e['id'] !== '' ? '/events/view.php?id=' . rawurlencode($e['id']) : '#';
-    $ctaLabel = 'Learn More';
+    $ctaUrl = '?event=' . rawurlencode($e['id']);
+    $ctaLabel = 'Select Event';
     ?>
     <div class="event-item">
         <div>
@@ -121,9 +152,31 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
             } ?>
         </div>
 
+        <!-- Selected Event Field Box -->
         <div class="selected-event">
-            <h2>Selected Event</h2>
+            <div id="userSelectedEvent">
+                <h2>Selected Event:</h2>
+                <?php if ($selectedEvent): ?>
+                <div class="event-details">
+                    <span class="event-title">
+                        <span class="label">Event:</span> <?= e($selectedEvent['title']) ?>
+                    </span>
+                    <span class="event-info">
+                        <span class="label">Date:</span> <?= e($selectedEvent['date']) ?>
+                        <span class="separator">|</span>
+                        <span class="label">Location:</span> <?= e($selectedEvent['location']) ?>
+                    </span>
+                </div>
+                <?php else: ?>
+                    <p>Please select an event to see details here.</p>
+                <?php endif; ?>
+            </div>
+        </div>
 
+
+
+
+        <div class="selected-event">
             <div class="form-inputs">
                 <label for="name">Name: (Autofill if login)</label>
                 <input type="text" id="name" name="name">
