@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <announcements>
   <announcement id="a-101" priority="high">
-    <title>Power Outage – West District</title>
+    <title>Power Outage - West District</title>
     <body>Scheduled maintenance will cause outages from 12:00–14:00 on 12 Sep.</body>
     <start>2025-09-01</start>
     <end>2026-09-13</end>
