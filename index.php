@@ -96,8 +96,13 @@ if ($xml === false) {
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
 
+<!--    Main Section      -->
+
 <body class="sb-expanded">
   <?= $nav->render($current) ?>
+
+  <!--    Page Content      -->
+
   <main> 
     <h1 class="page-title">Smart Community Portal</h1>
 
@@ -148,7 +153,9 @@ if ($xml === false) {
         <p class="sr-only" aria-live="polite" id="sr-status"></p>
       </section>
     <?php endif; ?>
-  </main>
+  </main>    <!--    End Page Content      -->
+
+  <!--    Footer section      -->
   <footer>
     &copy; 2025 CityLink Initiatives.
     <a href="privacy.php">Privacy Policy</a>

@@ -85,7 +85,6 @@ function renderEventItem(array $e): void
 {
     $when = $e['date'] !== '' ? e($e['date']) : 'TBA';
     $loc = $e['location'] !== '' ? ' · ' . e($e['location']) : '';
-    // You don't have a CTA in XML yet; we can derive a default route using id
     $ctaUrl = '?event=' . rawurlencode($e['id']);
     $ctaLabel = 'Select Event';
     ?>

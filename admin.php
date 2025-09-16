@@ -49,8 +49,12 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     </head>
 
+    <!--    Main Section      -->
+
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
+        
+        <!--    Page Content      -->
 
         <main>
             <h1 class="page-title">Admin Dashboard</h1>
@@ -70,8 +74,9 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
                     <li><a href="#">Edit Announcements</a></li>
                 </ul>
             </section>
-        </main>
+        </main> <!--    End page content    -->
 
+        <!--    Footer section      -->
         <footer>
             &copy; 2025 CityLink Initiatives.
             <a href="privacy.php">Privacy Policy</a>

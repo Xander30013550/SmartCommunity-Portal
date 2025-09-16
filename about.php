@@ -92,6 +92,7 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
             </ul>
         </div>
 
+        <!--    Contact Details      -->
         <div class="section contact-info">
             <h2>Contact Us</h2>
             <p><strong>Email:</strong> contact@citylink.gov.au</p>
