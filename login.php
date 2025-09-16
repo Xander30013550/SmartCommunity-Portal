@@ -1,9 +1,19 @@
 <?php
+declare(strict_types=1);
+
+require __DIR__ . '/vendor/autoload.php';
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 require_once 'functions.php';
 require_once 'auth.php';
 
 session_start();
 libxml_use_internal_errors(true);
+
+
 
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['role'] === 'admin') {
@@ -13,21 +23,6 @@ if (isset($_SESSION['user'])) {
     }
     exit;
 }
-
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-if (empty($menuItems)) {
-    $menuItems = [
-        ['id'=>'home', 'label'=>'Home', 'url'=>'/index.php', 'icon'=>'bx bx-home-circle', 'weight'=>10],
-        ['id'=>'login', 'label'=>'Login', 'url'=>'/login.php', 'icon'=>'bx bx-user', 'weight'=>20],
-        ['id'=>'register', 'label'=>'Register', 'url'=>'/register.php', 'icon'=>'bx bx-user-plus', 'weight'=>25],
-        ['id'=>'feedback', 'label'=>'Feedback', 'url'=>'/feedback.php', 'icon'=>'bx bx-chat', 'weight'=>30],
-        ['id'=>'bookings', 'label'=>'Bookings', 'url'=>'/bookings.php', 'icon'=>'bx bx-book-open', 'weight'=>40],
-        ['id'=>'about', 'label'=>'About', 'url'=>'/about.php', 'icon'=>'bx bx-info-square', 'weight'=>50],
-    ];
-}
-
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
 if (isset($_GET['logout'])) {
     session_destroy();
@@ -81,42 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </head>
 
     <body class="sb-expanded">
-        <nav id="sidebar">
-    <ul>
-        <li>
-            <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-            </button>
-        </li>
-
-        <?php foreach ($menuItems as $item): 
-            // Extracting target from the URL and checking if the current item is active
-            $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-            $isActive = $target === $current || ($target === '' && $current === 'index.php');
-        ?>
-        <li class="<?= $isActive ? 'active' : '' ?>">
-            <a href="<?= e($item['url']) ?>">
-                <!-- Dynamically load the icon -->
-                <i class="<?= e($item['icon']) ?>"></i>
-                <span><?= e($item['label']) ?></span>
-            </a>
-
-            <!-- Check for dropdown and render the sub-menu -->
-            <?php if (isset($item['subMenu']) && is_array($item['subMenu'])): ?>
-            <button onclick="toggleSubMenu(this)" class="dropdown-btn">
-                <i class="bx bx-chevron-down"></i>
-            </button>
-            <ul class="sub-menu">
-                <?php foreach ($item['subMenu'] as $subItem): ?>
-                <li><a href="<?= e($subItem['url']) ?>"><?= e($subItem['label']) ?></a></li>
-                <?php endforeach; ?>
-            </ul>
-            <?php endif; ?>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-</nav>
+        <?= $nav->render($current) ?>
 
         <main>
             <?php if (!empty($errors['general'])): ?>

@@ -1,5 +1,9 @@
 <?php 
+declare(strict_types=1);
+
+namespace App\Announcements;
 use DateTime;
+use SimpleXMLElement;
 final class Announcement
 {
     public string $id       = '';
@@ -15,4 +19,3 @@ final class Announcement
         foreach ($data as $k => $v) $this->$k = $v;
     }
 }
-?>

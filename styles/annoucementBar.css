@@ -1,11 +1,14 @@
-
-/* essential slider layout — keep or merge into styles.css */
+main {
+  flex: 1;            /* pushes footer down */
+}
 .slider {
   position: relative;
-  max-width: min(1100px, 92vw);
-  margin: 0 auto;
+  /*max-width: min(1100px, 92vw);*/
+  margin: 0;
+  margin-top: auto; 
   border-radius: 18px;
-  background: #f0f0f0;
+  background: black;
+  /*background: #f0f0f0;*/
   /* this line hides the off-screen slides */
   overflow: hidden; /* or overflow: clip; */
 }
@@ -14,18 +17,16 @@
   grid-auto-flow: column;
   grid-auto-columns: 100%;
   transition: transform .5s ease;
-  /* give it a height; adjust as needed */
-  height: clamp(280px, 54vw, 520px);
 }
 .slide {
-  margin: 0;             /* reset <figure> default margin */
+  margin: 0;
   width: 100%;
   height: 100%;
   display: grid;
 }
 .ann-card {
   color: #e9eef7;
-  padding: 1.2rem clamp(1rem, 4vw, 1.6rem);
+  padding: 0rem clamp(0rem, 2vw, 1.6rem);
   display: grid;
   gap: .6rem;
   grid-template-rows: auto auto 1fr auto auto;
@@ -35,4 +36,3 @@
 .dots button[aria-current="true"] { background: #C77DFF; width: 22px; }
 .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border: 0; border-radius: 999px; background: rgba(255,255,255,.9); cursor: pointer; }
 .prev { left: .75rem; } .next { right: .75rem; }
-
