@@ -238,12 +238,55 @@ if (isset($_GET['delete_id'])) {
                         <?php else: ?>
                             <p>No users found.</p>
                         <?php endif; ?>
-                    </div>
+                    </div>  <!--    End of Search section   -->
 
+                    <!--    Update section  -->
                     <div style="flex: 1; padding: 10px;">
                         <h2>Update Users Details</h2>
-                    </div>
+                        
+                        <!-- Update User Form -->
+                        <form method="POST" action="" style="width:99%;">
+                            <label for="user_id">User ID</label>
+                            <input type="number" id="user_id" name="user_id" required />
 
+                            <label for="name">Username</label>
+                            <input type="text" id="name" name="name" value="<?= htmlspecialchars($name ?? '') ?>" required />
+
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" required />
+
+                            <label for="role">Role</label>
+                            <select id="role" name="role" required>
+                                <option value="user" <?= ($role === 'user') ? 'selected' : '' ?>>User</option>
+                                <option value="admin" <?= ($role === 'admin') ? 'selected' : '' ?>>Admin</option>
+                            </select>
+
+                            <button type="submit" name="update_user">Update User</button>
+                        </form>
+
+                        <?php
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
+                                $userId = (int)$_POST['user_id'];
+                                $name = trim($_POST['name']);
+                                $email = trim($_POST['email']);
+                                $role = $_POST['role'];
+
+                                if (empty($name) || empty($email) || empty($role)) {
+                                    echo "<div class='error'>All fields are required.</div>";
+                                } else {
+                                    $updateResult = updateUser($userId, $name, $email, $role);
+
+                                    if ($updateResult) {
+                                        echo "<div class='success'>User with ID {$userId} has been updated successfully.</div>";
+                                    } else {
+                                        echo "<div class='error'>There was an error updating the user. Please check the ID and try again.</div>";
+                                    }
+                                }
+                            }
+                        ?>
+                    </div>  <!--    End of Update section   -->
+
+                    <!--    Delete section  -->
                     <div style="flex: 1; padding: 10px;">
                         <h2>Delete User</h2>
 
@@ -266,7 +309,7 @@ if (isset($_GET['delete_id'])) {
                                 }
                             }
                         ?>
-                    </div>
+                    </div>  <!--    End of Delete section   -->
                 </div>
             </section>
         </main>
