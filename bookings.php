@@ -9,7 +9,7 @@ use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
 // Saves Event on Selected Event button click
-$eventsPath  = __DIR__ . '/config/events.xml';
+$eventsPath = __DIR__ . '/config/events.xml';
 $eventsItems = getEventItems($eventsPath);
 
 // If xml is empty, fills default values
@@ -27,11 +27,11 @@ if (empty($eventsItems)) {
 
 // Error Catch in case selected event was null
 $selectedEventId = $_GET['event'] ?? null;
-$selectedEvent   = null;
+$selectedEvent = null;
 
 if ($selectedEventId !== null) {
     foreach ($eventsItems as $ev) {
-        if ((string)($ev['id'] ?? '') === (string)$selectedEventId) {
+        if ((string) ($ev['id'] ?? '') === (string) $selectedEventId) {
             $selectedEvent = $ev;
             break;
         }
@@ -40,7 +40,7 @@ if ($selectedEventId !== null) {
 
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
-$nav      = new NavRenderer($menuRepo);
+$nav = new NavRenderer($menuRepo);
 
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 
@@ -129,6 +129,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <?= $nav->render($current) ?>
 
     <!--    Page Content    -->
+        
     <main>
         <h1> Welcome to CityLink Initiatives </h1><br>
 
@@ -144,16 +145,16 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
             <div id="userSelectedEvent">
                 <h2>Selected Event:</h2>
                 <?php if ($selectedEvent): ?>
-                <div class="event-details">
-                    <span class="event-title">
-                        <span class="label">Event:</span> <?= e($selectedEvent['title']) ?>
-                    </span>
-                    <span class="event-info">
-                        <span class="label">Date:</span> <?= e($selectedEvent['date']) ?>
-                        <span class="separator">|</span>
-                        <span class="label">Location:</span> <?= e($selectedEvent['location']) ?>
-                    </span>
-                </div>
+                    <div class="event-details">
+                        <span class="event-title">
+                            <span class="label">Event:</span> <?= e($selectedEvent['title']) ?>
+                        </span>
+                        <span class="event-info">
+                            <span class="label">Date:</span> <?= e($selectedEvent['date']) ?>
+                            <span class="separator">|</span>
+                            <span class="label">Location:</span> <?= e($selectedEvent['location']) ?>
+                        </span>
+                    </div>
                 <?php else: ?>
                     <p>Please select an event to see details here.</p>
                 <?php endif; ?>

@@ -103,7 +103,7 @@ if ($xml === false) {
 
   <!--    Page Content      -->
 
-  <main> 
+  <main>
     <h1 class="page-title">Smart Community Portal</h1>
 
     <?php if (!empty($xmlErrorMsg)): ?>
@@ -153,7 +153,7 @@ if ($xml === false) {
         <p class="sr-only" aria-live="polite" id="sr-status"></p>
       </section>
     <?php endif; ?>
-  </main>    <!--    End Page Content      -->
+  </main> <!--    End Page Content      -->
 
   <!--    Footer section      -->
   <footer>

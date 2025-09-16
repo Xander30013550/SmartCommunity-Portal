@@ -12,22 +12,22 @@ use App\Menu\NavRenderer;
 
 // --- Ensure user is logged in and is an admin ---
 if (!isset($_SESSION['user'])) {
-  header('Location: login.php');
-  exit;
+    header('Location: login.php');
+    exit;
 }
 
 if ($_SESSION['user']['role'] !== 'admin') {
-  header('Location: user_home.php'); // Redirect general users elsewhere
-  exit;
+    header('Location: user_home.php'); // Redirect general users elsewhere
+    exit;
 }
 
 $user = $_SESSION['user'];
 
 // --- Handle logout ---
 if (isset($_GET['logout'])) {
-  session_destroy();
-  header('Location: login.php');
-  exit;
+    session_destroy();
+    header('Location: login.php');
+    exit;
 }
 
 // --- App boot ---
@@ -41,45 +41,47 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Admin Dashboard - Smart Community Portal</title>
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-    </head>
 
-    <!--    Main Section      -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard - Smart Community Portal</title>
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
 
-    <body class="sb-expanded">
-        <?= $nav->render($current) ?>
-        
-        <!--    Page Content      -->
+<!--    Main Section      -->
 
-        <main>
-            <h1 class="page-title">Admin Dashboard</h1>
+<body class="sb-expanded">
+    <?= $nav->render($current) ?>
 
-            <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
-                Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
-                (<?= htmlspecialchars($user['role']) ?>)
-                &nbsp;|&nbsp;
-                <a href="?logout=true">Logout</a>
-            </div>
+    <!--    Page Content      -->
 
-            <section>
-                <p>Welcome, <?= htmlspecialchars($user['name']) ?>. You have administrator access.</p>
+    <main>
+        <h1 class="page-title">Admin Dashboard</h1>
 
-                <ul>
-                    <li><a href="user_management.php">Manage Users</a></li>
-                    <li><a href="#">Edit Announcements</a></li>
-                </ul>
-            </section>
-        </main> <!--    End page content    -->
+        <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
+            Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
+            (<?= htmlspecialchars($user['role']) ?>)
+            &nbsp;|&nbsp;
+            <a href="?logout=true">Logout</a>
+        </div>
 
-        <!--    Footer section      -->
-        <footer>
-            &copy; 2025 CityLink Initiatives.
-            <a href="privacy.php">Privacy Policy</a>
-        </footer>
-    </body>
+        <section>
+            <p>Welcome, <?= htmlspecialchars($user['name']) ?>. You have administrator access.</p>
+
+            <ul>
+                <li><a href="user_management.php">Manage Users</a></li>
+                <li><a href="#">Edit Announcements</a></li>
+            </ul>
+        </section>
+    </main> <!--    End page content    -->
+
+    <!--    Footer section      -->
+    <footer>
+        &copy; 2025 CityLink Initiatives.
+        <a href="privacy.php">Privacy Policy</a>
+    </footer>
+</body>
+
 </html>

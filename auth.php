@@ -1,7 +1,8 @@
 <?php
 require_once 'db.php';
 
-function registerUser(string $name, string $email, string $password, string $role = 'user'): array {
+function registerUser(string $name, string $email, string $password, string $role = 'user'): array
+{
     $errors = [];
 
     if (!in_array($role, ['user', 'admin'])) {
@@ -34,7 +35,8 @@ function registerUser(string $name, string $email, string $password, string $rol
     return $errors;
 }
 
-function loginUser(string $login, string $password): ?array {
+function loginUser(string $login, string $password): ?array
+{
     $stmt = db()->prepare("SELECT * FROM users WHERE email = ? OR name = ?");
     $stmt->execute([$login, $login]);
     $userRecord = $stmt->fetch();
@@ -47,6 +49,6 @@ function loginUser(string $login, string $password): ?array {
             'role' => $userRecord['role']
         ];
     }
-    
+
     return null;
 }

@@ -22,9 +22,9 @@ if ($_SESSION['user']['role'] === 'admin') {
 }
 
 if (isset($_GET['logout'])) {
-    session_destroy();
-    header('Location: login.php');
-    exit;
+  session_destroy();
+  header('Location: login.php');
+  exit;
 }
 
 $user = $_SESSION['user'];
@@ -84,7 +84,8 @@ if ($xml === false) {
 
   usort($items, function ($a, $b) {
     $w = weightOf($b['priority']) <=> weightOf($a['priority']);
-    if ($w !== 0) return $w;
+    if ($w !== 0)
+      return $w;
     return $a['end'] <=> $b['end'];
   });
 }
@@ -92,6 +93,7 @@ if ($xml === false) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -107,10 +109,10 @@ if ($xml === false) {
     <h1 class="page-title">Welcome to the User Dashboard</h1>
 
     <div class="user-info" style="margin-bottom: 1em;">
-        👤 Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
-        (<?= htmlspecialchars($user['role']) ?>)
-        &nbsp;|&nbsp;
-        <a href="?logout=true">Logout</a>
+      👤 Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
+      (<?= htmlspecialchars($user['role']) ?>)
+      &nbsp;|&nbsp;
+      <a href="?logout=true">Logout</a>
     </div>
 
     <?php if (!empty($xmlErrorMsg)): ?>
@@ -131,8 +133,10 @@ if ($xml === false) {
                 <p class="ann-when">
                   <?php
                   $parts = [];
-                  if ($a['start']) $parts[] = 'From ' . $a['start']->format('M j, Y');
-                  if ($a['end']) $parts[] = 'until ' . $a['end']->format('M j, Y');
+                  if ($a['start'])
+                    $parts[] = 'From ' . $a['start']->format('M j, Y');
+                  if ($a['end'])
+                    $parts[] = 'until ' . $a['end']->format('M j, Y');
                   echo htmlspecialchars(implode(' ', $parts));
                   ?>
                 </p>
@@ -162,4 +166,5 @@ if ($xml === false) {
   </footer>
 
 </body>
+
 </html>
