@@ -83,50 +83,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
 
-        <main>
-            <?php if (!empty($errors['general'])): ?>
-                <div class="error"><?= e($errors['general']) ?></div>
+    <main>
+        <?php if (!empty($errors['general'])): ?>
+            <div class="error"><?= e($errors['general']) ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="register.php" novalidate>
+            <img src="../images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Logo" />
+
+            <h1>Register</h1>
+
+            <label for="name">Username</label>
+            <input type="text" id="name" name="name" value="<?php echo $username; ?>" required />
+            <?php if (!empty($errors['name'])): ?>
+                <div class="error"><?= e($errors['name']) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="register.php" novalidate>           
-                <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Logo" />
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
+            <?php if (!empty($errors['email'])): ?>
+                <div class="error"><?= e($errors['email']) ?></div>
+            <?php endif; ?>
 
-                <h1>Register</h1>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required minlength="6" />
+            <?php if (!empty($errors['password'])): ?>
+                <div class="error"><?= e($errors['password']) ?></div>
+            <?php endif; ?>
 
-                <label for="name">Username</label>
-                <input type="text" id="name" name="name" value="<?php echo $username; ?>" required />
-                <?php if (!empty($errors['name'])): ?>
-                    <div class="error"><?= e($errors['name']) ?></div>
-                <?php endif; ?>
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
+            <?php if (!empty($errors['confirm_password'])): ?>
+                <div class="error"><?= e($errors['confirm_password']) ?></div>
+            <?php endif; ?>
 
-                <label for="email">Email address</label>
-                <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
-                <?php if (!empty($errors['email'])): ?>
-                    <div class="error"><?= e($errors['email']) ?></div>
-                <?php endif; ?>
+            <button type="submit">Register</button>
+            <p>Already registered? <a href="login.php">Login here</a>.</p>
+        </form>
+    </main> <!--    End Page Content      -->
 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required minlength="6" />
-                <?php if (!empty($errors['password'])): ?>
-                    <div class="error"><?= e($errors['password']) ?></div>
-                <?php endif; ?>
-                
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
-                <?php if (!empty($errors['confirm_password'])): ?>
-                    <div class="error"><?= e($errors['confirm_password']) ?></div>
-                <?php endif; ?>
+    <!--    Footer section      -->
+    <footer>
+        &copy; 2025 CityLink Initiatives.
+        <a href="privacy.php">Privacy Policy</a>
+    </footer>
 
-                <button type="submit">Register</button>
-                <p>Already registered? <a href="login.php">Login here</a>.</p>
-            </form>
-        </main>
+    <script type="text/javascript" src="../js/script.js" defer></script>
+</body>
 
-        <footer>
-            &copy; 2025 CityLink Initiatives.
-            <a href="privacy.php">Privacy Policy</a>
-        </footer>
-
-        <script type="text/javascript" src="./js/script.js" defer></script>
-    </body>
 </html>

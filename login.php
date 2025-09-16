@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user) {
             $_SESSION['user'] = $user;
 
-            if ($user['role'] === 'admin'){
+            if ($user['role'] === 'admin') {
                 header('Location: admin.php');
             } else {
                 header('Location: user_home.php');
@@ -67,54 +67,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Login - Smart Community Portal</title>
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-    </head>
 
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
 
-        <main>
-            <?php if (!empty($errors['general'])): ?>
-                <div class="error"><?= e($errors['general']) ?></div>
-            <?php endif; ?>
+    <!--    Page Content      -->
 
-            <form method="POST" action="login.php" novalidate>
-                <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Company Logo" />
+    <nav id="sidebar">
+        <ul>
+            <li>
+                <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
+                    <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
+                    <i id="icon-collapse" class="bx bx-chevrons-left"></i>
+                </button>
+            </li>
 
-                <h1>Login</h1>
+            <?php foreach ($menuItems as $item):
+                // Extracting target from the URL and checking if the current item is active
+                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
+                $isActive = $target === $current || ($target === '' && $current === 'index.php');
+                ?>
+                <li class="<?= $isActive ? 'active' : '' ?>">
+                    <a href="<?= e($item['url']) ?>">
+                        <!-- Dynamically load the icon -->
+                        <i class="<?= e($item['icon']) ?>"></i>
+                        <span><?= e($item['label']) ?></span>
+                    </a>
 
-                <div>
-                    <label for="login">Email or Username</label><br />
-                    <input type="text" id="login" name="login" value="<?= e($login) ?>" required />
-                    <?php if (!empty($errors['login'])): ?>
-                        <div class="error"><?= e($errors['login']) ?></div>
+                    <!-- Check for dropdown and render the sub-menu -->
+                    <?php if (isset($item['subMenu']) && is_array($item['subMenu'])): ?>
+                        <button onclick="toggleSubMenu(this)" class="dropdown-btn">
+                            <i class="bx bx-chevron-down"></i>
+                        </button>
+                        <ul class="sub-menu">
+                            <?php foreach ($item['subMenu'] as $subItem): ?>
+                                <li><a href="<?= e($subItem['url']) ?>"><?= e($subItem['label']) ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
                     <?php endif; ?>
-                </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </nav>
 
-                <div>
-                    <label for="password">Password</label><br />
-                    <input type="password" id="password" name="password" required />
-                    <?php if (!empty($errors['password'])): ?>
-                        <div class="error"><?= e($errors['password']) ?></div>
-                    <?php endif; ?>
-                </div>
+    <main>
+        <?php if (!empty($errors['general'])): ?>
+            <div class="error"><?= e($errors['general']) ?></div>
+        <?php endif; ?>
 
-                <button type="submit">Login</button>
+        <form method="POST" action="login.php" novalidate>
+            <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Company Logo" />
 
-                <p> Don't have an account? <a href="register.php"> Register here</a>.</p>
-            </form>            
-        </main>
+            <h1>Login</h1>
 
-        <footer>
-            &copy; 2025 CityLink Initiatives.
-            &nbsp;<a href="privacy.php">Privacy Policy</a>
-        </footer>
+            <div>
+                <label for="login">Email or Username</label><br />
+                <input type="text" id="login" name="login" value="<?= e($login) ?>" required />
+                <?php if (!empty($errors['login'])): ?>
+                    <div class="error"><?= e($errors['login']) ?></div>
+                <?php endif; ?>
+            </div>
 
-        <script type="text/javascript" src="./js/script.js" defer></script>
-    </body>
+            <div>
+                <label for="password">Password</label><br />
+                <input type="password" id="password" name="password" required />
+                <?php if (!empty($errors['password'])): ?>
+                    <div class="error"><?= e($errors['password']) ?></div>
+                <?php endif; ?>
+            </div>
+
+            <button type="submit">Login</button>
+
+            <p> Don't have an account? <a href="register.php"> Register here</a>.</p>
+        </form>
+    </main> <!--    End Page Content      -->
+
+    <!--    Footer Section      -->
+    <footer>
+        &copy; 2025 CityLink Initiatives.
+        &nbsp;<a href="privacy.php">Privacy Policy</a>
+    </footer>
+
+    <script type="text/javascript" src="./js/script.js" defer></script>
+</body>
+
 </html>
