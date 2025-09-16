@@ -64,3 +64,8 @@ function getUsers ($searchTerm = ''){
 
     return $stmt -> fetchAll(PDO::FETCH_ASSOC);
 }
+
+function deleteUser ($id):bool {
+    $stmt = db()->prepare("DELETE FROM users WHERE id = ?");
+    return $stmt->execute([$id]);
+}
