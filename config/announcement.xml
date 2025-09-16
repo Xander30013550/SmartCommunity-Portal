@@ -4,7 +4,7 @@
     <title>Power Outage – West District</title>
     <body>Scheduled maintenance will cause outages from 12:00–14:00 on 12 Sep.</body>
     <start>2025-09-01</start>
-    <end>2025-09-13</end>
+    <end>2026-09-13</end>
     <category>Maintenance</category>
     <link url="https://citylink.example/works/power" text="More info"/>
   </announcement>
@@ -13,7 +13,7 @@
     <title>Community Fair</title>
     <body>Food stalls, live music, kids zone at Hearth Park.</body>
     <start>2025-09-01</start>
-    <end>2025-09-16</end>
+    <end>2026-09-17</end>
     <category>Events</category>
   </announcement>
 

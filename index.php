@@ -154,6 +154,7 @@ if ($xml === false) {
     <a href="privacy.php">Privacy Policy</a>
   </footer>
   <script src="./js/slider.js"></script>
+  <script src="./js/script.js"></script>
 </body>
 
 </html>

@@ -14,19 +14,6 @@ libxml_use_internal_errors(true);
 require_once 'functions.php';
 require_once 'auth.php';
 
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-if (empty($menuItems)) {
-    $menuItems = [
-        ['id' => 'home', 'label' => 'Home', 'url' => '/index.php', 'icon' => 'bx bx-home-circle', 'weight' => 10],
-        ['id' => 'login', 'label' => 'Login', 'url' => '/login.php', 'icon' => 'bx bx-user', 'weight' => 20],
-        ['id' => 'register', 'label' => 'Register', 'url' => '/register.php', 'icon' => 'bx bx-user-plus', 'weight' => 25],
-        ['id' => 'feedback', 'label' => 'Feedback', 'url' => '/feedback.php', 'icon' => 'bx bx-chat', 'weight' => 30],
-        ['id' => 'bookings', 'label' => 'Bookings', 'url' => '/bookings.php', 'icon' => 'bx bx-book-open', 'weight' => 40],
-        ['id' => 'about', 'label' => 'About', 'url' => '/about.php', 'icon' => 'bx bx-info-square', 'weight' => 50],
-    ];
-}
-
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
 if (isset($_GET['logout'])) {

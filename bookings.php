@@ -2,7 +2,8 @@
 declare(strict_types=1);
 libxml_use_internal_errors(true);
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/functions.php';
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
@@ -42,20 +43,7 @@ $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav      = new NavRenderer($menuRepo);
 
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
-function e(string $s): string
-{
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
-}
-/**
- * Load and parse an XML file safely. Returns SimpleXMLElement|null.
- */
-function loadXml(string $path): ?SimpleXMLElement
-{
-    if (!is_file($path))
-        return null;
-    $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
-    return $xml !== false ? $xml : null;
-}
+
 
 function getEventItems(string $eventsPath): array
 {
