@@ -1,6 +1,6 @@
 <?php
-require_once '../functions.php';
-require_once './auth.php';
+require_once 'functions.php';
+require_once 'auth.php';
 
 // Check if already logged in
 session_start();
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>Register</h1>
 
             <label for="name">Username</label>
-            <input type="text" id="name" name="name" value="<?php echo $username; ?>" required />
+            <input type="text" id="name" name="name" value="<?php echo e($name); ?>" required />
             <?php if (!empty($errors['name'])): ?>
                 <div class="error"><?= e($errors['name']) ?></div>
             <?php endif; ?>

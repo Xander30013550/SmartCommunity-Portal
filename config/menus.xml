@@ -26,5 +26,9 @@
       <url>./about.php</url>
       <icon>bx bx-info-square</icon>
     </item>
+    <item id="toggle-theme" weight="50">
+      <label>Theme</label>
+      <icon>bx bx-moon</icon>
+    </item>
   </menu>
 </menus>

@@ -129,7 +129,6 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <?= $nav->render($current) ?>
 
     <!--    Page Content    -->
-        
     <main>
         <h1> Welcome to CityLink Initiatives </h1><br>
 
