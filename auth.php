@@ -52,3 +52,15 @@ function loginUser(string $login, string $password): ?array
 
     return null;
 }
+
+function getUsers ($searchTerm = ''){
+    if ($searchTerm !== '') {
+        $stmt = db()->prepare("SELECT * FROM users WHERE name LIKE ? OR email LIKE ?");
+        $searchTerm = "%$searchTerm%";
+        $stmt->execute([$searchTerm, $searchTerm]);
+    } else {
+        return [];
+    }
+
+    return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+}

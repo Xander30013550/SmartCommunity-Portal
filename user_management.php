@@ -48,7 +48,7 @@ $role = '';
 $isAdmin = $user['role'] === 'admin';
 
 // Process the form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['register'] )) {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -98,30 +98,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$userDetails = null;
+$users = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
     $searchTerm = trim($_POST['search_term'] ?? '');
-    $searchType = $_POST['search_type'] ?? 'email';
-
+    
     if ($searchTerm === '') {
         $errors['search'] = 'Please enter a name or email to search.';
     }
 
     if (empty($errors)) {
-        if ($searchType === 'email') {
-            $stmt = db()->prepare("SELECT * FROM users WHERE email = ?");
-        } else {
-            $stmt = db()->prepare("SELECT * FROM users WHERE name = ?");
-        }
-
-        $stmt->execute([$searchTerm]);
-        $userDetails = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$userDetails) {
-            $errors['search'] = 'No user found with that name or email.';
-        }
+        // Perform the search query
+        $users = getUsers($searchTerm); // Fetch matching users
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['search'])) {
+    $users = getUsers();
 }
 ?>
 
@@ -141,8 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
     <?= $nav->render($current) ?>
 
     <main>
-
-
         <section>
             <h1 class="page-title">Admin Portal - Add New User</h1>
 
@@ -196,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
                             <input type="hidden" name="role" value="user" />
                         <?php endif; ?>
 
-                        <button type="submit">Register</button>
+                        <button type="submit" name="register">Register</button>
                     </form><br>
 
                     <?php if ($successMessage): ?>
@@ -209,6 +200,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
                 <!--    Search record section-->
                 <div style="flex: 1; padding: 10px;">
                     <h2> View Users Details </h2>
+
+                    <!--    Search form     -->
+                    <form method="post" action="" style="width:99%;">
+                        <label for="search_term">Search by Name or Email:</label>
+                        <input type="text" id="search_term" name="search_term" value="<?= htmlspecialchars($searchTerm ?? '') ?>" />
+                        <button type="submit" name="search">Search</button>
+                    </form><br><br>
+
+                    <!-- Display Errors if Any -->
+                    <?php if (!empty($errors['search'])): ?>
+                        <div class="error"><?= e($errors['search']) ?></div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($users)): ?>
+                        <ul>
+                            <?php foreach ($users as $user): ?>
+                                <li>
+                                    <strong>Name:</strong> <?= htmlspecialchars($user['name']) ?><br>
+                                    <strong>Email:</strong> <?= htmlspecialchars($user['email']) ?><br>
+                                    <strong>Role:</strong> <?= htmlspecialchars($user['role']) ?><br>
+                                    <strong>ID:</strong> <?= $user['id'] ?><br>
+                                </li><br>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p>No users found.</p>
+                    <?php endif; ?>
                 </div>
 
                 <div style="flex: 1; padding: 10px;">
