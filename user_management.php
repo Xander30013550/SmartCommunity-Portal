@@ -48,7 +48,7 @@ $role = '';
 $isAdmin = $user['role'] === 'admin';
 
 // Process the form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['register'] )) {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -98,29 +98,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$userDetails = null;
+$users = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
     $searchTerm = trim($_POST['search_term'] ?? '');
-    $searchType = $_POST['search_type'] ?? 'email';
-
+    
     if ($searchTerm === '') {
         $errors['search'] = 'Please enter a name or email to search.';
     }
 
     if (empty($errors)) {
-        if ($searchType === 'email') {
-            $stmt = db()->prepare("SELECT * FROM users WHERE email = ?");
-        } else {
-            $stmt = db()->prepare("SELECT * FROM users WHERE name = ?");
-        }
+        // Perform the search query
+        $users = getUsers($searchTerm); // Fetch matching users
+    }
+}
 
-        $stmt->execute([$searchTerm]);
-        $userDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['search'])) {
+    $users = getUsers();
+}
 
-        if (!$userDetails) {
-            $errors['search'] = 'No user found with that name or email.';
-        }
+//  Delete user
+if (isset($_GET['delete_id'])) {
+    $deleteId = (int)$_GET['delete_id'];
+    $deleteResult = deleteUser($deleteId);
+
+    if ($deleteResult) {
+        echo "<div class='success'>User has been deleted successfully.</div>";
+    } else {
+        echo "<div class='error'>There was an error deleting the user.</div>";
     }
 }
 ?>
@@ -128,104 +133,190 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
 <!DOCTYPE html>
 
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>User Management - Smart Community Portal</title>
+        <link rel="stylesheet" href="./styles/styles.css" />
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Management - Smart Community Portal</title>
-    <link rel="stylesheet" href="./styles/styles.css" />
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
+    <body class="sb-expanded">
+        <?= $nav->render($current) ?>
 
-<body class="sb-expanded">
-    <?= $nav->render($current) ?>
+        <main>
+            <section>
+                <h1 class="page-title">Admin Portal - Add New User</h1>
 
-    <main>
+                <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
+                    Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong><br>
+                    <a href="admin.php">Return to Dashboard</a>
+                    &nbsp;|&nbsp; <a href="#">Edit Announcements</a>
+                    &nbsp;|&nbsp; <a href="?logout=true">Logout</a>
+                </div>
 
+                <div style="display: flex; width:100%;">
+                    <!--    Add user section    -->
+                    <div style="flex: 1; padding: 10px;">
+                        <h2> Add a New User </h2>
 
-        <section>
-            <h1 class="page-title">Admin Portal - Add New User</h1>
-
-            <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
-                Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong><br>
-                <a href="admin.php">Return to Dashboard</a>
-                &nbsp;|&nbsp; <a href="#">Edit Announcements</a>
-                &nbsp;|&nbsp; <a href="?logout=true">Logout</a>
-            </div>
-
-            <div style="display: flex; width:100%;">
-                <!--    Add user section    -->
-                <div style="flex: 1; padding: 10px;">
-                    <h2> Add a New User </h2>
-
-                    <form method="POST" action="" novalidate style="width: 99%;">
-                        <label for="name">Username</label>
-                        <input type="text" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required />
-                        <?php if (!empty($errors['name'])): ?>
-                            <div class="error"><?= e($errors['name']) ?></div>
-                        <?php endif; ?>
-
-                        <label for="email">Email address</label>
-                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required />
-                        <?php if (!empty($errors['email'])): ?>
-                            <div class="error"><?= e($errors['email']) ?></div>
-                        <?php endif; ?>
-
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required minlength="6" />
-                        <?php if (!empty($errors['password'])): ?>
-                            <div class="error"><?= e($errors['password']) ?></div>
-                        <?php endif; ?>
-
-                        <label for="confirm_password">Confirm Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
-                        <?php if (!empty($errors['confirm_password'])): ?>
-                            <div class="error"><?= e($errors['confirm_password']) ?></div>
-                        <?php endif; ?>
-
-                        <?php if ($isAdmin): ?>
-                            <label for="role">Set Their Role</label>
-                            <select id="role" name="role" required>
-                                <option value="user" <?= ($role === 'user') ? 'selected' : '' ?>>user</option>
-                                <option value="admin" <?= ($role === 'admin') ? 'selected' : '' ?>>admin</option>
-                            </select>
-                            <?php if (!empty($errors['role'])): ?>
-                                <div class="error"><?= e($errors['role']) ?></div>
+                        <form method="POST" action="" novalidate style="width: 99%;">
+                            <label for="name">Username</label>
+                            <input type="text" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required />
+                            <?php if (!empty($errors['name'])): ?>
+                                <div class="error"><?= e($errors['name']) ?></div>
                             <?php endif; ?>
-                        <?php else: ?>
-                            <input type="hidden" name="role" value="user" />
+
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required />
+                            <?php if (!empty($errors['email'])): ?>
+                                <div class="error"><?= e($errors['email']) ?></div>
+                            <?php endif; ?>
+
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required minlength="6" />
+                            <?php if (!empty($errors['password'])): ?>
+                                <div class="error"><?= e($errors['password']) ?></div>
+                            <?php endif; ?>
+
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
+                            <?php if (!empty($errors['confirm_password'])): ?>
+                                <div class="error"><?= e($errors['confirm_password']) ?></div>
+                            <?php endif; ?>
+
+                            <?php if ($isAdmin): ?>
+                                <label for="role">Set Their Role</label>
+                                <select id="role" name="role" required>
+                                    <option value="user" <?= ($role === 'user') ? 'selected' : '' ?>>user</option>
+                                    <option value="admin" <?= ($role === 'admin') ? 'selected' : '' ?>>admin</option>
+                                </select>
+                                <?php if (!empty($errors['role'])): ?>
+                                    <div class="error"><?= e($errors['role']) ?></div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <input type="hidden" name="role" value="user" />
+                            <?php endif; ?>
+
+                            <button type="submit" name="register">Register</button>
+                        </form><br>
+
+                        <?php if ($successMessage): ?>
+                            <div class="success"><?= htmlspecialchars($successMessage) ?></div>
+                        <?php elseif (!empty($errors['general'])): ?>
+                            <div class="error"><?= e($errors['general']) ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!--    Search record section-->
+                    <div style="flex: 1; padding: 10px;">
+                        <h2> View Users Details </h2>
+
+                        <!--    Search form     -->
+                        <form method="post" action="" style="width:99%;">
+                            <label for="search_term">Search by Name or Email:</label>
+                            <input type="text" id="search_term" name="search_term" value="<?= htmlspecialchars($searchTerm ?? '') ?>" />
+                            <button type="submit" name="search">Search</button>
+                        </form><br><br>
+
+                        <!-- Display Errors if Any -->
+                        <?php if (!empty($errors['search'])): ?>
+                            <div class="error"><?= e($errors['search']) ?></div>
                         <?php endif; ?>
 
-                        <button type="submit">Register</button>
-                    </form><br>
+                        <?php if (!empty($users)): ?>
+                            <ul>
+                                <?php foreach ($users as $user): ?>
+                                    <li>
+                                        <strong>Name:</strong> <?= htmlspecialchars($user['name']) ?><br>
+                                        <strong>Email:</strong> <?= htmlspecialchars($user['email']) ?><br>
+                                        <strong>Role:</strong> <?= htmlspecialchars($user['role']) ?><br>
+                                        <strong>ID:</strong> <?= $user['id'] ?><br>
+                                    </li><br>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p>No users found.</p>
+                        <?php endif; ?>
+                    </div>  <!--    End of Search section   -->
 
-                    <?php if ($successMessage): ?>
-                        <div class="success"><?= htmlspecialchars($successMessage) ?></div>
-                    <?php elseif (!empty($errors['general'])): ?>
-                        <div class="error"><?= e($errors['general']) ?></div>
-                    <?php endif; ?>
+                    <!--    Update section  -->
+                    <div style="flex: 1; padding: 10px;">
+                        <h2>Update Users Details</h2>
+                        
+                        <!-- Update User Form -->
+                        <form method="POST" action="" style="width:99%;">
+                            <label for="user_id">User ID</label>
+                            <input type="number" id="user_id" name="user_id" required />
+
+                            <label for="name">Username</label>
+                            <input type="text" id="name" name="name" value="<?= htmlspecialchars($name ?? '') ?>" required />
+
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" required />
+
+                            <label for="role">Role</label>
+                            <select id="role" name="role" required>
+                                <option value="user" <?= ($role === 'user') ? 'selected' : '' ?>>User</option>
+                                <option value="admin" <?= ($role === 'admin') ? 'selected' : '' ?>>Admin</option>
+                            </select>
+
+                            <button type="submit" name="update_user">Update User</button>
+                        </form>
+
+                        <?php
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
+                                $userId = (int)$_POST['user_id'];
+                                $name = trim($_POST['name']);
+                                $email = trim($_POST['email']);
+                                $role = $_POST['role'];
+
+                                if (empty($name) || empty($email) || empty($role)) {
+                                    echo "<div class='error'>All fields are required.</div>";
+                                } else {
+                                    $updateResult = updateUser($userId, $name, $email, $role);
+
+                                    if ($updateResult) {
+                                        echo "<div class='success'>User with ID {$userId} has been updated successfully.</div>";
+                                    } else {
+                                        echo "<div class='error'>There was an error updating the user. Please check the ID and try again.</div>";
+                                    }
+                                }
+                            }
+                        ?>
+                    </div>  <!--    End of Update section   -->
+
+                    <!--    Delete section  -->
+                    <div style="flex: 1; padding: 10px;">
+                        <h2>Delete User</h2>
+
+                        <form method="POST" action="" style="width:99%;">
+                            <label for="user_id">Enter User ID to Delete</label>
+                            <input type="number" id="user_id" name="user_id" required />
+                            
+                            <button type="submit" name="delete_user">Delete User</button>
+                        </form>
+
+                        <?php
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
+                                $userId = (int)$_POST['user_id'];
+                                $deleteResult = deleteUser($userId);
+
+                                if ($deleteResult) {
+                                    echo "<div class='success'>User with ID {$userId} has been deleted successfully.</div>";
+                                } else {
+                                    echo "<div class='error'>There was an error deleting the user. Please check the ID and try again.</div>";
+                                }
+                            }
+                        ?>
+                    </div>  <!--    End of Delete section   -->
                 </div>
+            </section>
+        </main>
 
-                <!--    Search record section-->
-                <div style="flex: 1; padding: 10px;">
-                    <h2> View Users Details </h2>
-                </div>
-
-                <div style="flex: 1; padding: 10px;">
-                    <h2>Update Users Details</h2>
-                </div>
-
-                <div style="flex: 1; padding: 10px;">
-                    <h2>Delete User</h2>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        &copy; 2025 CityLink Initiatives.
-        <a href="privacy.php">Privacy Policy</a>
-    </footer>
-</body>
-
+        <footer>
+            &copy; 2025 CityLink Initiatives.
+            <a href="privacy.php">Privacy Policy</a>
+        </footer>
+    </body>
 </html>

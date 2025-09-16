@@ -52,3 +52,25 @@ function loginUser(string $login, string $password): ?array
 
     return null;
 }
+
+function getUsers ($searchTerm = ''){
+    if ($searchTerm !== '') {
+        $stmt = db() -> prepare("SELECT * FROM users WHERE name LIKE ? OR email LIKE ?");
+        $searchTerm = "%$searchTerm%";
+        $stmt -> execute([$searchTerm, $searchTerm]);
+    } else {
+        return [];
+    }
+
+    return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+}
+
+function deleteUser ($id):bool {
+    $stmt = db() -> prepare("DELETE FROM users WHERE id = ?");
+    return $stmt->execute([$id]);
+}
+
+function updateUser($id, $name, $email, $role) {
+        $stmt = db() -> prepare("UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?");
+        return $stmt -> execute([$name, $email, $role, $id]);
+    }
