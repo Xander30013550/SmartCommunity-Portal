@@ -53,4 +53,3 @@ window.addEventListener('click', (e) => {
 });
 
 document.getElementById('feedback-form').addEventListener('submit', handleFormSubmit);
-

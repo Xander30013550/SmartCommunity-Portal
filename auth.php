@@ -1,24 +1,33 @@
 <?php
 require_once 'db.php';
 
-function registerUser(string $name, string $email, string $password): array {
+function registerUser(string $name, string $email, string $password, string $role = 'user'): array {
     $errors = [];
+
+    if (!in_array($role, ['user', 'admin'])) {
+        $errors['role'] = 'Invalid role specified.';
+        return $errors;
+    }
 
     $stmt = db()->prepare("SELECT id FROM users WHERE email = ? OR name = ?");
     $stmt->execute([$email, $name]);
+
     if ($stmt->fetch()) {
         $errors['general'] = 'Email or username already exists.';
     }
 
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = db()->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $email, $hashedPassword]);
-        
+
+        // Insert new user with specified role
+        $stmt = db()->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$name, $email, $hashedPassword, $role]);
+
         return [
             'id' => db()->lastInsertId(),
             'name' => $name,
-            'email' => $email
+            'email' => $email,
+            'role' => $role
         ];
     }
 
@@ -35,6 +44,7 @@ function loginUser(string $login, string $password): ?array {
             'id' => $userRecord['id'],
             'name' => $userRecord['name'],
             'email' => $userRecord['email'],
+            'role' => $userRecord['role']
         ];
     }
     

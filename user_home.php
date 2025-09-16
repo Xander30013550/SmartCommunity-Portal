@@ -10,23 +10,33 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
-// --- app boot ---
+// --- Ensure user is logged in and is a general user ---
+if (!isset($_SESSION['user'])) {
+  header('Location: login.php');
+  exit;
+}
+
+if ($_SESSION['user']['role'] === 'admin') {
+  header('Location: admin.php'); // Redirect admins to the admin dashboard
+  exit;
+}
+
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: login.php');
+    exit;
+}
+
+$user = $_SESSION['user'];
+
+// --- App boot ---
 date_default_timezone_set('Australia/Perth');
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
+$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'user_home.php');
 
-if (isset($_GET['logout'])) {
-  session_destroy();
-  header('Location: index.php');
-  exit;
-}
-
-$user = $_SESSION['user'] ?? null;
-$showLogoutLink = $user !== null;
-
-// --- load XML ---
+// --- Load XML ---
 $xmlPath = __DIR__ . '/config/announcement.xml';
 $xml = @simplexml_load_file($xmlPath);
 
@@ -45,16 +55,15 @@ if ($xml === false) {
   }
 
   $today = new DateTime();
-
   $items = [];
+
   foreach ($xml->announcement as $a) {
-    // Parse dates (optional fields)
     $start = isset($a->start) && trim((string) $a->start) !== '' ? new DateTime((string) $a->start) : null;
     $end = isset($a->end) && trim((string) $a->end) !== '' ? new DateTime((string) $a->end) : null;
 
-    // Filter: only announcements that have started and not yet ended
     $okStart = !$start || $today >= $start;
     $okEnd = !$end || $today < $end;
+
     if (!($okStart && $okEnd)) {
       continue;
     }
@@ -73,33 +82,36 @@ if ($xml === false) {
     ];
   }
 
-  // sort: priority desc, then earliest end first
   usort($items, function ($a, $b) {
     $w = weightOf($b['priority']) <=> weightOf($a['priority']);
-    if ($w !== 0)
-      return $w;
-    $ae = $a['end'];
-    $be = $b['end'];
-    return $ae <=> $be;
+    if ($w !== 0) return $w;
+    return $a['end'] <=> $b['end'];
   });
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart Community Portal</title>
+  <title>User Dashboard - Smart Community Portal</title>
   <link rel="stylesheet" href="./styles/styles.css" />
-  <link rel="stylesheet" href="./styles/annoucementBar.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
 
 <body class="sb-expanded">
   <?= $nav->render($current) ?>
-  <main> 
-    <h1 class="page-title">Smart Community Portal</h1>
+
+  <main>
+    <h1 class="page-title">Welcome to the User Dashboard</h1>
+
+    <div class="user-info" style="margin-bottom: 1em;">
+        👤 Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
+        (<?= htmlspecialchars($user['role']) ?>)
+        &nbsp;|&nbsp;
+        <a href="?logout=true">Logout</a>
+    </div>
 
     <?php if (!empty($xmlErrorMsg)): ?>
       <div class="alert error"><?= $xmlErrorMsg ?></div>
@@ -114,22 +126,16 @@ if ($xml === false) {
               aria-label="Announcement <?= $i + 1 ?> of <?= count($items) ?>">
               <article class="ann-card">
                 <div class="ann-chip"><?= htmlspecialchars($a['category']) ?></div>
-
                 <h2 class="ann-title"><?= htmlspecialchars($a['title']) ?></h2>
-
                 <p class="ann-body"><?= nl2br(htmlspecialchars($a['body'])) ?></p>
-
                 <p class="ann-when">
                   <?php
                   $parts = [];
-                  if ($a['start'])
-                    $parts[] = 'From ' . $a['start']->format('M j, Y');
-                  if ($a['end'])
-                    $parts[] = 'until ' . $a['end']->format('M j, Y');
+                  if ($a['start']) $parts[] = 'From ' . $a['start']->format('M j, Y');
+                  if ($a['end']) $parts[] = 'until ' . $a['end']->format('M j, Y');
                   echo htmlspecialchars(implode(' ', $parts));
                   ?>
                 </p>
-
                 <?php if (!empty($a['link']['url'])): ?>
                   <a class="ann-link" href="<?= htmlspecialchars($a['link']['url']) ?>" target="_blank"
                     rel="noopener noreferrer">
@@ -149,11 +155,11 @@ if ($xml === false) {
       </section>
     <?php endif; ?>
   </main>
+
   <footer>
     &copy; 2025 CityLink Initiatives.
     <a href="privacy.php">Privacy Policy</a>
   </footer>
-  <script src="./js/slider.js"></script>
-</body>
 
+</body>
 </html>

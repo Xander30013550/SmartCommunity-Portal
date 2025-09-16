@@ -45,13 +45,14 @@ footer {
 }
 
 #sidebar.close {
-  width: 50px;
+  width: 60px; 
   padding: 1em 0.5em;
 }
 
-/* Navigation links */
 #sidebar ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 #sidebar a {
@@ -62,14 +63,31 @@ footer {
   color: #FBFEFB;
   text-decoration: none;
   border-radius: 0.5em;
-  transition: background 200ms;
+  transition: background 200ms, justify-content 300ms;
 }
 
 #sidebar a:hover {
   background-color: #C77DFF;
 }
 
-/* Toggle button */
+#sidebar a i {
+  font-size: 1em;
+  transition: margin 0.3s ease;
+}
+
+#sidebar a span {
+  transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+#sidebar.close a span {
+  display: none;
+}
+
+#sidebar.close a {
+  justify-content: center;
+  padding: 0.75em 0;
+}
+
 #toggle-btn {
   margin-left: auto;
   padding: 1em;
@@ -85,17 +103,11 @@ footer {
   background-color: #C77DFF;
 }
 
-/* Hidden icon utility */
 .hidden {
   display: none !important;
 }
 
-/* Main content */
-main {
-  padding: 2em;
-}
 
-/* Responsive: stack layout on small screens */
 @media (max-width: 800px) {
   body {
     grid-template-columns: 1fr;
@@ -123,6 +135,7 @@ main {
     z-index: 10;
   }
 }
+
 
 /* Form */
 form {
@@ -341,3 +354,45 @@ ul {
     font-weight: bold;
     cursor: pointer;
 }
+
+
+/* Selected Event Box */
+#userSelectedEvent {
+  background-color: #f0f0f0;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  text-align: center;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#userSelectedEvent h2 {
+  margin: 0 0 10px 0;
+}
+
+.event-details {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  gap: 15px; 
+  flex-wrap: nowrap; 
+  overflow-x: auto; 
+}
+
+.event-info {
+  font-size: 0.95em;
+}
+
+.label {
+  font-style: italic;
+  margin-right: 4px;
+}
+
+.separator {
+  margin: 0 8px;
+  color: #555;
+}
+
