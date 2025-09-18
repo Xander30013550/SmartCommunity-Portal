@@ -67,49 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
-
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Community Portal</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
-
-    <!--    Page Content      -->
-
-    <nav id="sidebar">
-        <ul>
-            <li>
-                <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                    <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                    <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                </button>
-            </li>
-
-            <?php foreach ($menuItems as $item):
-                // Extracting target from the URL and checking if the current item is active
-                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <!-- Dynamically load the icon -->
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-
-                    <!-- Check for dropdown and render the sub-menu -->
-                    <?php if (isset($item['subMenu']) && is_array($item['subMenu'])): ?>
-                        <button onclick="toggleSubMenu(this)" class="dropdown-btn">
-                            <i class="bx bx-chevron-down"></i>
-                        </button>
-                        <ul class="sub-menu">
-                            <?php foreach ($item['subMenu'] as $subItem): ?>
-                                <li><a href="<?= e($subItem['url']) ?>"><?= e($subItem['label']) ?></a></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
-
     <main>
         <?php if (!empty($errors['general'])): ?>
             <div class="error"><?= e($errors['general']) ?></div>
