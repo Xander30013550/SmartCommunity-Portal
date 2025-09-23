@@ -227,7 +227,23 @@ button {
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
+  text-align: center;
 }
+
+.selected-event .form-inputs form {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: nowrap;   /* prevents wrapping to next line */
+    justify-content: center;
+}
+
+.selected-event .form-inputs .field {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;     /* allows fields to shrink/grow equally */
+}
+
 
 .event-item {
   background-color: #f0f0f0;

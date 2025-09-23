@@ -53,3 +53,36 @@ window.addEventListener('click', (e) => {
 });
 
 document.getElementById('feedback-form').addEventListener('submit', handleFormSubmit);
+
+
+// Reservation Booking Submit to Database
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reservationForm');
+    const feedback = document.getElementById('reservationFeedback');
+
+    form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function(e) {
+    e.preventDefault(); // prevent normal form submission
+
+    const formData = new FormData(form);
+
+    fetch('reserve.php', {  
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        feedback.textContent = data.message;  // always show PHP message
+        feedback.style.color = data.success ? 'green' : 'red';
+        console.log(data); // <-- log full JSON to see DB errors
+        if (data.success) form.reset();
+    })
+    .catch(err => {
+        feedback.textContent = "Error submitting reservation.";
+        feedback.style.color = 'red';
+        console.error(err);
+    });
+});
+ 
+    });
+});
