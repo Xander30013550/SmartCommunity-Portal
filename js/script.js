@@ -11,26 +11,39 @@ function toggleSidebar() {
 // Feedback Form Functions
 
 function handleFormSubmit(event) {
-    //event.preventDefault();
+    event.preventDefault();
 
     const form = event.target;
-    if (!form.checkValidity()) return; 
 
-    // Fill form info
-    const formInfo = document.getElementById('formInfo');
-    formInfo.innerHTML = `
-        <p><strong>Name:</strong> ${document.getElementById('name').value}</p>
-        <p><strong>Email:</strong> ${document.getElementById('email').value}</p>
-        <p><strong>Subject:</strong> ${document.getElementById('subject').value}</p>
-        <p><strong>Message:</strong> ${document.getElementById('message').value}</p>
-    `;
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
 
-    formInfo.style.display = 'none';
+    const formData = new FormData(form);
 
-    // Show modal
-    const modal = document.getElementById('successModal');
-    modal.style.display = 'flex';
-    form.reset();
+    fetch(form.action || window.location.href, {
+        method: 'POST',
+        body: formData,
+    }).then(response => response.json()).then(data => {
+        if (data.success) {
+            document.getElementById('successModal').style.display = 'flex';
+
+            document.getElementById('formInfo').innerHTML = `
+                <p><strong>Name:</strong> ${formData.get('name')}</p>
+                <p><strong>Email:</strong> ${formData.get('email')}</p>
+                <p><strong>Subject:</strong> ${formData.get('subject')}</p>
+                <p><strong>Message:</strong> ${formData.get('message')}</p>
+            `;
+
+            form.reset();
+        } else {
+            alert("Submission failed:\n" + data.message);
+        }
+    }).catch(error => {
+        console.error('Error submitting form:', error);
+        alert('An error occurred submitting the form.');
+    });
 }
 
 // Toggle form info

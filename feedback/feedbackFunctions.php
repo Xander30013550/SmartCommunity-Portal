@@ -30,8 +30,6 @@ function addFeedbackToTable (string $name, string $email, string $subject, strin
             return $errors;
         }
 
-        $stmt->execute([$name, $email, $subject, $message]);
-
         return [
             'id' => db()->lastInsertId(),
             'name' => $name,

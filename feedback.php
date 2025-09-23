@@ -18,13 +18,15 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
 $feedbackSuccess = false;
 $feedbackErrors = [];
 $formData = [
-    'name' => isset($_POST['name']) ? trim($_POST['name']) : '',
-    'email' => isset($_POST['email']) ? trim($_POST['email']) : '',
-    'subject' => isset($_POST['subject']) ? trim($_POST['subject']) : '',
-    'message' => isset($_POST['message']) ? trim($_POST['message']) : ''
+    'name' => '',
+    'email' => '',
+    'subject' => '',
+    'message' => ''
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    header('Content-Type: application/json');
+
     $formData = [
         'name' => trim($_POST['name'] ?? ''),
         'email' => trim($_POST['email'] ?? ''),
@@ -39,17 +41,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $formData['subject'],
             $formData['message']
         );
+
+        error_log('addFeedbackToTable result: ' . print_r($result, true));
     } catch (Throwable $e) {
-        die("addFeedbackToTable() error: " . $e->getMessage());
+         echo json_encode([
+            'success' => false,
+            'message' => "addFeedbackToTable() error: " . $e->getMessage(),
+        ]);
+        exit;
     } catch (Exception $e) { 
-        die("addFeedbackToTable() error: " . $e->getMessage());
+         echo json_encode([
+            'success' => false,
+            'message' => "addFeedbackToTable() error: " . $e->getMessage(),
+        ]);
+        exit;
     }
 
     if (isset($result['id'])) {
-        $feedbackSuccess = true;
+        echo json_encode(['success' => true]);
     } else {
-        $feedbackErrors = $result;
+        echo json_encode([
+            'success' => false,
+            'message' => is_array($result) ? json_encode($result) : 'Failed to add feedback to database.',
+        ]);
     }
+
+    exit;
 }
 
 function getFaqItems(string $faqPath): array {
@@ -197,21 +214,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
         <a href="privacy.php"> Privacy Policy </a>
     </Footer>
 
-    <?php if ($feedbackSuccess): ?>
-        <script>
-            window.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('successModal').style.display = 'block';
-            });
-        </script>
-    <?php endif; ?>
-
     <script type="text/javascript" src="./js/script.js" defer></script>
-
-    <script>
-        document.getElementById('feedback-form').addEventListener('submit', function(e) {
-            console.log('Form submitted!');
-        });
-    </script>
 </body>
 
 </html>
