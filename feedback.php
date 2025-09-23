@@ -1,19 +1,61 @@
 <?php
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
 declare(strict_types=1);
 libxml_use_internal_errors(true);
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/functions.php';
+//require_once __DIR__ . '/feedback/feedbackFunctions.php';
+
+
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
-
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
 
+
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-function getFaqItems(string $faqPath): array
-{
+/*$feedbackSuccess = false;
+$feedbackErrors = [];
+$formData = [
+    'name' => '',
+    'email' => '',
+    'subject' => '',
+    'message' => ''
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $formData = [
+        'name' => trim($_POST['name'] ?? ''),
+        'email' => trim($_POST['email'] ?? ''),
+        'subject' => trim($_POST['subject'] ?? ''),
+        'message' => trim($_POST['message'] ?? ''),
+    ];
+
+    try {
+        $result = addFeedbackToTable(
+            $formData['name'],
+            $formData['email'],
+            $formData['subject'],
+            $formData['message']
+        );
+    } catch (Throwable $e) {
+        die("addFeedbackToTable() error: " . $e->getMessage());
+    }
+
+    if (isset($result['id'])) {
+        $feedbackSuccess = true;
+    } else {
+        $feedbackErrors = $result;
+    }
+}*/
+
+function getFaqItems(string $faqPath): array {
     $xml = loadXml($faqPath);
     if (!$xml)
         return [];
@@ -88,36 +130,38 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
         <h1> Welcome to CityLink Initiatives </h1><br>
         <div class="row">
             <div class="column">
-                <form id="feedback-form" class="form">
+                <form id="feedback-form" class="form" method="POST" action="">
                     <!--    Company logo    -->
                     <img src="./images/CityLinkIcon.png" width="50%" style="margin: auto;" />
 
                     <h2> Feedback Form </h2>
 
                     <label for="name"> Name: </label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="name" required value="<?= htmlspecialchars($formData['name']) ?>">
 
                     <label for="email"> Email: </label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required value="<?= htmlspecialchars($formData['email']) ?>">
 
                     <label for="subject"> Subject: </label>
                     <select id="subject" name="subject" required>
-                        <option value="" disabled selected>Please Select...</option>
-                        <option value="eventBookings">Event Bookings</option>
-                        <option value="wasteManagement">Waste Management</option>
-                        <option value="communityPrograms">Community Programs</option>
-                        <option value="ratesEnquiries">Rates Enquiries</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="publicAnnouncements">Public Announcements</option>
-                        <option value="serviceRequests">Service Requests</option>
-                        <option value="volunteering">Volunteering Opportunities</option>
-                        <option value="other">Other</option>
+                        <option value="" disabled <?= $formData['subject'] === '' ? 'selected' : '' ?>>Please Select...</option>
+                        <option value="eventBookings" <?= $formData['subject'] === 'eventBookings' ? 'selected' : '' ?>>Event Bookings</option>
+                        <option value="wasteManagement" <?= $formData['subject'] == 'wasteManagement' ? 'selected' : ''?>>Waste Management</option>
+                        <option value="communityPrograms" <?= $formData['subject'] == 'communityPrograms' ? 'selected' : ''?>>Community Programs</option>
+                        <option value="ratesEnquiries" <?= $formData['subject'] == 'ratesEnquiries' ? 'selected' : ''?>>Rates Enquiries</option>
+                        <option value="feedback" <?= $formData['subject'] == 'feedback' ? 'selected' : ''?>>Feedback</option>
+                        <option value="publicAnnouncements" <?= $formData['subject'] == 'publicAnnouncements' ? 'selected' : ''?>>Public Announcements</option>
+                        <option value="serviceRequests" <?= $formData['subject'] == 'serviceRequests' ? 'selected' : ''?>>Service Requests</option>
+                        <option value="volunteering" <?= $formData['subject'] == 'volunteering' ? 'selected' : ''?>>Volunteering Opportunities</option>
+                        <option value="other" <?= $formData['subject'] == 'other' ? 'selected' : ''?>>Other</option>
                     </select>
 
                     <label for="message"> Message: </label>
-                    <textarea id="message" name="message" required></textarea>
+                    
+                    <textarea id="message" name="message" required><?= htmlspecialchars($formData['message']) ?></textarea>
 
                     <button type="submit"> Submit </button>
+
                 </form>
 
                 <!--    Modal Feedback Popup    -->
@@ -155,6 +199,14 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
         &copy; 2025 CityLink Initiatives. &nbsp;
         <a href="privacy.php"> Privacy Policy </a>
     </Footer>
+
+    <?php if ($feedbackSuccess): ?>
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('successModal').style.display = 'block';
+            });
+        </script>
+    <?php endif; ?>
 
     <script type="text/javascript" src="./js/script.js" defer></script>
 </body>

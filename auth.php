@@ -73,4 +73,4 @@ function deleteUser ($id):bool {
 function updateUser($id, $name, $email, $role) {
         $stmt = db() -> prepare("UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?");
         return $stmt -> execute([$name, $email, $role, $id]);
-    }
+}
