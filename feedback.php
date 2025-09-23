@@ -1,14 +1,10 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-
 declare(strict_types=1);
 libxml_use_internal_errors(true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/functions.php';
-//require_once __DIR__ . '/feedback/feedbackFunctions.php';
+require_once __DIR__ . '/feedback/feedbackFunctions.php';
 
 
 use App\Menu\MenuRepository;
@@ -20,13 +16,13 @@ $nav = new NavRenderer($menuRepo);
 
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-/*$feedbackSuccess = false;
+$feedbackSuccess = false;
 $feedbackErrors = [];
 $formData = [
-    'name' => '',
-    'email' => '',
-    'subject' => '',
-    'message' => ''
+    'name' => isset($_POST['name']) ? trim($_POST['name']) : '',
+    'email' => isset($_POST['email']) ? trim($_POST['email']) : '',
+    'subject' => isset($_POST['subject']) ? trim($_POST['subject']) : '',
+    'message' => isset($_POST['message']) ? trim($_POST['message']) : ''
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -46,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         );
     } catch (Throwable $e) {
         die("addFeedbackToTable() error: " . $e->getMessage());
+    } catch (Exception $e) { // in case Throwable is not supported (PHP <7)
+        die("addFeedbackToTable() error: " . $e->getMessage());
     }
 
     if (isset($result['id'])) {
@@ -53,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     } else {
         $feedbackErrors = $result;
     }
-}*/
+}
 
 function getFaqItems(string $faqPath): array {
     $xml = loadXml($faqPath);

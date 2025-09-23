@@ -1,5 +1,6 @@
 <?php
-require_once '../db.php';
+$path = realpath(__DIR__ . '/../db.php');
+require_once $path;
 
 function addFeedbackToTable (string $name, string $email, string $subject, string $message): array {
     $errors = [];
