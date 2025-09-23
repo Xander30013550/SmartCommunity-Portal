@@ -1,18 +1,17 @@
 <?php
 declare(strict_types=1);
+
 libxml_use_internal_errors(true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/feedback/feedbackFunctions.php';
 
-
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
-
 
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
@@ -42,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         );
     } catch (Throwable $e) {
         die("addFeedbackToTable() error: " . $e->getMessage());
-    } catch (Exception $e) { // in case Throwable is not supported (PHP <7)
+    } catch (Exception $e) { 
         die("addFeedbackToTable() error: " . $e->getMessage());
     }
 
@@ -207,6 +206,12 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <?php endif; ?>
 
     <script type="text/javascript" src="./js/script.js" defer></script>
+
+    <script>
+        document.getElementById('feedback-form').addEventListener('submit', function(e) {
+            console.log('Form submitted!');
+        });
+    </script>
 </body>
 
 </html>

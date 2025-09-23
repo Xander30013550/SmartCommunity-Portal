@@ -3,6 +3,7 @@ $path = realpath(__DIR__ . '/../db.php');
 require_once $path;
 
 function addFeedbackToTable (string $name, string $email, string $subject, string $message): array {
+    file_put_contents(__DIR__ . '/../debug_entered.txt', "Entered addFeedbackToTable()\n", FILE_APPEND);
     $errors = [];
 
     if (empty($name)){
@@ -23,6 +24,12 @@ function addFeedbackToTable (string $name, string $email, string $subject, strin
 
     if (empty($errors)){
         $stmt = db()->prepare("INSERT INTO feedback (name, email, subject, message, created_at) VALUES (?, ?, ?, ?, NOW())");
+
+        if (!$stmt->execute([$name, $email, $subject, $message])) {
+            $errors['sql'] = 'Database insertion failed: ' . implode(', ', $stmt->errorInfo());
+            return $errors;
+        }
+
         $stmt->execute([$name, $email, $subject, $message]);
 
         return [
@@ -33,6 +40,8 @@ function addFeedbackToTable (string $name, string $email, string $subject, strin
             'message' => $message
         ];
     }
+
+    file_put_contents(__DIR__ . '/../debug_entered.txt', "Exiting addFeedbackToTable(): " . print_r($errors ?: 'success', true) . "\n", FILE_APPEND);
 
     return $errors;
 }

@@ -11,7 +11,7 @@ function toggleSidebar() {
 // Feedback Form Functions
 
 function handleFormSubmit(event) {
-    event.preventDefault();
+    //event.preventDefault();
 
     const form = event.target;
     if (!form.checkValidity()) return; 
