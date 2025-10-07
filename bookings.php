@@ -99,8 +99,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: 'index.p
 <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
 <body class="sb-expanded">
-<?= $nav->render($current) ?>
-
+  
 <main>
     <h1>Upcoming Events</h1>
     <div class="upcoming-events">
