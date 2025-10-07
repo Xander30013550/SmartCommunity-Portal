@@ -131,7 +131,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <!--    Page Content    -->
         
     <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
+        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
 
         <div class="upcoming-events">
             <h2>Upcoming Events</h2>

@@ -7,7 +7,7 @@ main {
   margin: 0;
   margin-top: auto; 
   border-radius: 18px;
-  background: black;
+  background: #F8F8FF;
   /*background: #f0f0f0;*/
   /* this line hides the off-screen slides */
   overflow: hidden; /* or overflow: clip; */
@@ -25,11 +25,15 @@ main {
   display: grid;
 }
 .ann-card {
-  color: #e9eef7;
+  color: #f0f0f0;
   padding: 0rem clamp(0rem, 2vw, 1.6rem);
   display: grid;
   gap: .6rem;
   grid-template-rows: auto auto 1fr auto auto;
+}
+section.announceBar{
+  position: sticky;
+  bottom: calc(var(--footer-height) + some-margin);
 }
 .dots { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); display: flex; gap: .5rem; }
 .dots button { width: 10px; height: 10px; border-radius: 999px; border: 0; background: #7B2CBF; cursor: pointer; }

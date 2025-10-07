@@ -141,7 +141,6 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <!--    Page Content    -->
 
     <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
         <div class="row">
             <div class="column">
                 <form id="feedback-form" class="form" method="POST" action="">

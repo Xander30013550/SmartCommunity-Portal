@@ -45,6 +45,7 @@ $user = $_SESSION['user'] ?? null;
 
     <!--    Page Content    -->
     <main>
+        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" />
         <h1>Privacy Policy</h1>
         <p><strong>Last Updated: August 18, 2025</strong></p><br>
 

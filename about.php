@@ -28,7 +28,7 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
     <!--    Page Content    -->
         
     <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
+        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo"/><br>
 
         <div class="section">
             <h2>Our Mission</h2>

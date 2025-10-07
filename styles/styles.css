@@ -12,7 +12,7 @@ body {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: 1fr auto;
-  background: linear-gradient(#FBFEFB, #EFE5DC);
+  background:#f7f7f7;
   color: #10002B;
 }
 
@@ -397,3 +397,48 @@ ul {
   color: #555;
 }
 
+img.logo{
+  max-height: 120px;
+  width: auto;
+}
+
+.home-page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.home {         /* fills full viewport height */
+  text-align: center;       /* optional: centre text lines */
+  padding: 1rem;
+}
+
+.home p {
+  max-width: 600px;
+  font-weight: bold;
+  font-size: x-large;
+  margin: 0 auto;
+}
+
+.announce-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end; /* button sits under bar, right-aligned */
+}
+
+.btn.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem .9rem;
+  border-radius: 10px;
+  border: 1px solid #6b4ba6;
+  background: #7b58bd10;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn.btn-edit:hover {
+  background: #7b58bd22;
+}
