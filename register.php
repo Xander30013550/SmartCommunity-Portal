@@ -1,5 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
+require __DIR__ . '/vendor/autoload.php';
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+
+
 require_once 'functions.php';
 require_once 'auth.php';
 
