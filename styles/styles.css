@@ -388,7 +388,7 @@ button {
 
 /* ===================== Dark Mode ===================== */
 .dark {
-  background: #2b2b2b;
+  background: #383333;
   color: #e0e0e0;
 }
 
@@ -400,16 +400,13 @@ button {
   color: #ccc;
 }
 
-.dark #sidebar {
-  background: linear-gradient(135deg, #3b3b3b, #1f1f1f);
-}
-
 .dark #userSelectedEvent,
 .dark .faq-container,
 .dark .modal-content,
 .dark #popup,
 .dark .upcoming-events,
 .dark .selected-event,
+.dark .ann-card,
 .dark .event-item {
   background-color: #3b3b3b;
   color: #e0e0e0;
