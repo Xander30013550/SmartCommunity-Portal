@@ -1,4 +1,5 @@
 <?php
+
 require_once 'functions.php';
 require_once 'auth.php';
 
@@ -12,10 +13,6 @@ if (isset($_SESSION['user'])) {
     }
     exit;
 }
-
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
 $errors = [];
 $name = $email = $password = $confirm_password = '';
@@ -67,42 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Register - Smart Community Portal</title>
-    <link rel="stylesheet" href="../styles/styles.css" />
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
-
-<!--    Main Content      -->
-
-<body class="sb-expanded">
-
-    <!--    Page Content      -->
-
-    <nav id="sidebar">
-        <ul>
-            <li>
-                <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                    <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                    <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                </button>
-            </li>
-            <?php foreach ($menuItems as $item):
-                $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Register - Smart Community Portal</title>
+        <link rel="stylesheet" href="./styles/styles.css" />
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    </head>
+    <body class="sb-expanded">
+        <?= $nav->render($current) ?>
 
     <main>
         <?php if (!empty($errors['general'])): ?>
