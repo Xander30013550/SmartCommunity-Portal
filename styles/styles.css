@@ -1,11 +1,10 @@
-/* Reset margins/padding */
+/* ===================== Reset & Base ===================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base layout */
 body {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   min-height: 100vh;
@@ -23,7 +22,7 @@ section {
   grid-row: 1;
 }
 
-/* Footer */
+/* ===================== Footer ===================== */
 footer {
   text-align: center;
   padding: 1rem;
@@ -32,7 +31,18 @@ footer {
   grid-row: 2;
 }
 
-/* Sidebar Start */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 0.9em;
+  color: #777;
+}
+
+.contact-info p {
+  font-weight: bold;
+}
+
+/* ===================== Sidebar ===================== */
 #sidebar {
   width: 250px;
   height: 100vh;
@@ -107,7 +117,6 @@ footer {
   display: none !important;
 }
 
-
 @media (max-width: 800px) {
   body {
     grid-template-columns: 1fr;
@@ -135,10 +144,8 @@ footer {
     z-index: 10;
   }
 }
-/* Sidebar End */
 
-
-/* Form */
+/* ===================== Forms ===================== */
 form {
   display: flex;
   flex-direction: column;
@@ -155,11 +162,11 @@ form {
 }
 
 .label {
-    width: 60%;
-    color: #7B2CBF;
+  width: 60%;
+  color: #7B2CBF;
 }
 
-/* Feedback */
+/* ===================== Feedback ===================== */
 #feedback {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -186,80 +193,10 @@ form {
   gap: 1rem;
 }
 
-
+/* ===================== Typography ===================== */
 img {
   margin: 0 auto; 
   width: 50%; 
-}
-
-h2 {
-  margin-bottom: 1rem; 
-}
-
-details {
-  margin-bottom: 1rem; 
-}
-
-button {
-  margin-top: 1rem; 
-}
-
-.flex-container {
-  display: flex;
-  gap: 2rem;
-}
-
-.column {
-  float: left;
-  width: 50%;
-  padding: 10px;
-}
-
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Events */
-.upcoming-events, .selected-event {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.event-item {
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.event-item button {
-  padding: 10px 20px;
-  border: none;
-  background-color: #7B2CBF;
-  color: white;
-  cursor: pointer;
-}
-
-.uniform-button {
-    width: 200px;
-    background-color: #7B2CBF;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: center;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.uniform-button:hover {
-    background-color: #5A189A;
 }
 
 h1, h2 {
@@ -281,83 +218,87 @@ ul {
   margin-bottom: 40px;
 }
 
-.footer {
+/* ===================== Buttons ===================== */
+button {
+  margin-top: 1rem; 
+}
+
+.flex-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.uniform-button {
+  width: 200px;
+  background-color: #7B2CBF;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
   text-align: center;
-  margin-top: 50px;
-  font-size: 0.9em;
-  color: #777;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
-.contact-info p {
-  font-weight: bold;
+.uniform-button:hover {
+  background-color: #5A189A;
 }
 
-/*Feedback Popup*/
-#popup {
-    display: none;
-    border: 1px solid #333;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #f1f1f1;
-    width: 300px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+/* ===================== Columns/Rows ===================== */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
 }
 
-#toggleBtn {
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    cursor: pointer;
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
-#formInfo {
-    display: none;
-    font-size: 14px;
+/* ===================== Events ===================== */
+.upcoming-events, .selected-event {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.modal {
-    display: none; 
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5); 
+.selected-event .form-inputs form {
     display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: nowrap;   /* prevents wrapping to next line */
     justify-content: center;
-    align-items: center;
 }
 
-.modal-content {
-    background-color: #fff;
-    padding: 30px 20px;
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
-.tick {
-    font-size: 50px;
-    color: green;
-    margin-bottom: 15px;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+.selected-event .form-inputs .field {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;     /* allows fields to shrink/grow equally */
 }
 
 
-/* Selected Event Box */
+.event-item {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-item button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #7B2CBF;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===================== Selected Event Box ===================== */
 #userSelectedEvent {
   background-color: #f0f0f0;
   padding: 12px 20px;
@@ -395,6 +336,96 @@ ul {
 .separator {
   margin: 0 8px;
   color: #555;
+}
+
+/* ===================== Modals / Feedback Popup ===================== */
+#popup {
+  display: none;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  width: 300px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+}
+
+#toggleBtn {
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#formInfo {
+  display: none;
+  font-size: 14px;
+}
+
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px 20px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.tick {
+  font-size: 50px;
+  color: green;
+  margin-bottom: 15px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ===================== Dark Mode ===================== */
+.dark {
+  background: #383333;
+  color: #e0e0e0;
+}
+
+.dark h1, .dark h2 {
+  color: #c8a2ff;
+}
+
+.dark p, .dark ul, .dark .separator {
+  color: #ccc;
+}
+
+.dark #userSelectedEvent,
+.dark .faq-container,
+.dark .modal-content,
+.dark #popup,
+.dark .upcoming-events,
+.dark .selected-event,
+.dark .ann-card,
+.dark .event-item {
+  background-color: #3b3b3b;
+  color: #e0e0e0;
 }
 
 img.logo{

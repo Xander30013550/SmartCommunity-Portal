@@ -9,6 +9,7 @@ $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav      = new NavRenderer($menuRepo);
 $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 
+
 require_once 'functions.php';
 require_once 'auth.php';
 
@@ -94,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>Register</h1>
 
             <label for="name">Username</label>
-            <input type="text" id="name" name="name" value="<?php echo $username; ?>" required />
+            <input type="text" id="name" name="name" value="<?php echo e($name); ?>" required />
             <?php if (!empty($errors['name'])): ?>
                 <div class="error"><?= e($errors['name']) ?></div>
             <?php endif; ?>
