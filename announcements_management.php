@@ -149,13 +149,16 @@ if ($editId) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <?php include './shared/header.php'; ?>
+<!--<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Announcement Management — Smart Community Portal</title>
   <link rel="stylesheet" href="./styles/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-  <style>
+  
+</head>-->
+<style>
     main { max-width: 1100px; margin: 0 auto; padding: 1.25rem; }
     .page-title { display: flex; align-items: center; gap: .5rem; }
     .grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
@@ -181,7 +184,7 @@ if ($editId) {
     .flash.err { border:1px solid #e39c9c; background:#fdeeee; }
     .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
   </style>
-</head>
+
 <body class="sb-expanded">
   <main>
     <div class="topbar">

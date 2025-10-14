@@ -1,12 +1,6 @@
 <?php
 declare(strict_types=1);
 session_start();
-$_SESSION['user'] = [
-  'id' => 1,
-  'name' => 'John Waffles',
-  'email' => 'John.Waffles@nomnom.tasty',
-  'role' => 'admin'
-];
 libxml_use_internal_errors(true);
 
 require_once 'functions.php';
@@ -38,15 +32,8 @@ $isAdmin = isset($user) && (($user['role'] ?? '') === 'admin');
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart Community Portal</title>
-  <link rel="stylesheet" href="./styles/styles.css" />
-  <link rel="stylesheet" href="./styles/annoucementBar.css" />
-  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
+  <!--  Moved the header to its on php file, and passing a reference to it in each page -->
+  <?php include './shared/header.php'; ?>
 
 <body class="sb-expanded">
   <?= $nav->render($current) ?>

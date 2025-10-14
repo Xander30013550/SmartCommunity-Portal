@@ -4,12 +4,42 @@ function toggleSidebar() {
     const iconExpand = document.getElementById('icon-expand');
     const iconCollapse = document.getElementById('icon-collapse');
 
-    if (!sidebar || !iconExpand || !iconCollapse) return;
+    if (!sidebar) return;
 
-    sidebar.classList.toggle('close');
-    iconExpand.classList.toggle('hidden');
-    iconCollapse.classList.toggle('hidden');
+    const isClosed = sidebar.classList.toggle('close');
+
+    // Handle icons
+    if (iconExpand && iconCollapse) {
+        iconExpand.classList.toggle('hidden', !isClosed);
+        iconCollapse.classList.toggle('hidden', isClosed);
+    }
+
+    // Save state
+    localStorage.setItem('sidebarCollapsed', isClosed ? 'true' : 'false');
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+
+    if (!sidebar) return;
+
+    // Apply saved state
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        sidebar.classList.add('close');
+    }
+
+    // Show correct icon on load
+    const iconExpand = document.getElementById('icon-expand');
+    const iconCollapse = document.getElementById('icon-collapse');
+    if (isCollapsed) {
+        iconExpand?.classList.remove('hidden');
+        iconCollapse?.classList.add('hidden');
+    } else {
+        iconExpand?.classList.add('hidden');
+        iconCollapse?.classList.remove('hidden');
+    }
+});
 
 // ===================== Feedback Form Functions =====================
 function handleFormSubmit(event) {
