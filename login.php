@@ -13,8 +13,6 @@ require_once 'auth.php';
 session_start();
 libxml_use_internal_errors(true);
 
-
-
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['role'] === 'admin') {
         header('Location: admin.php');
@@ -67,13 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart Community Portal</title>
-  <link rel="stylesheet" href="./styles/styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
+    <?php include './shared/header.php'; ?>
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
     <main>
