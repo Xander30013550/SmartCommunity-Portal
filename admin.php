@@ -75,6 +75,8 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
         &copy; 2025 CityLink Initiatives.
         <a href="privacy.php">Privacy Policy</a>
     </footer>
+
+    <script src="./js/script.js"></script>
 </body>
 
 </html>

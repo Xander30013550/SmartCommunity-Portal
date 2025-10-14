@@ -312,5 +312,7 @@ if (isset($_GET['delete_id'])) {
             &copy; 2025 CityLink Initiatives.
             <a href="privacy.php">Privacy Policy</a>
         </footer>
+
+        <script src="./js/script.js"></script>
     </body>
 </html>
