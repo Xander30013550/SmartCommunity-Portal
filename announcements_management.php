@@ -5,9 +5,9 @@ session_start();
 libxml_use_internal_errors(true);
 
 require_once 'functions.php';
-require_once __DIR__ . '/announcement_functions.php';    
+require_once __DIR__ . '/announcement_functions.php';
 require_once 'auth.php';
-require_once __DIR__ . '/config.php';  
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Menu\MenuRepository;
@@ -47,7 +47,10 @@ $searchTerm = '';
 
 // small helper if not provided by your functions.php
 if (!function_exists('e')) {
-  function e($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+  function e($s)
+  {
+    return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
+  }
 }
 
 // ---------------- Handlers ------------------
@@ -55,22 +58,22 @@ if (!function_exists('e')) {
 // Add announcement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_announcement'])) {
   $announcement_id = trim($_POST['announcement_id'] ?? '');
-  $priority        = trim($_POST['priority'] ?? '');
-  $title           = trim($_POST['title'] ?? '');
-  $body            = trim($_POST['body'] ?? '');
-  $start           = trim($_POST['start'] ?? '');
-  $end             = trim($_POST['end'] ?? '');
-  $link_url        = trim($_POST['link_url'] ?? '');
-  $link_text       = trim($_POST['link_text'] ?? '');
+  $priority = trim($_POST['priority'] ?? '');
+  $title = trim($_POST['title'] ?? '');
+  $body = trim($_POST['body'] ?? '');
+  $start = trim($_POST['start'] ?? '');
+  $end = trim($_POST['end'] ?? '');
+  $link_url = trim($_POST['link_url'] ?? '');
+  $link_text = trim($_POST['link_text'] ?? '');
 
   $res = addAnnouncement([
-    'id'        => $announcement_id,
-    'priority'  => $priority,
-    'title'     => $title,
-    'body'      => $body,
-    'start'     => $start,
-    'end'       => $end,
-    'link_url'  => $link_url ?: null,
+    'id' => $announcement_id,
+    'priority' => $priority,
+    'title' => $title,
+    'body' => $body,
+    'start' => $start,
+    'end' => $end,
+    'link_url' => $link_url ?: null,
     'link_text' => $link_text ?: null,
   ]);
 
@@ -93,25 +96,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
 
 // Update announcement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_announcement'])) {
-  $upd_id        = trim($_POST['upd_announcement_id'] ?? '');
-  $upd_priority  = trim($_POST['upd_priority'] ?? '');
-  $upd_title     = trim($_POST['upd_title'] ?? '');
-  $upd_body      = trim($_POST['upd_body'] ?? '');
-  $upd_start     = trim($_POST['upd_start'] ?? '');
-  $upd_end       = trim($_POST['upd_end'] ?? '');
-  $upd_link_url  = trim($_POST['upd_link_url'] ?? '');
+  $upd_id = trim($_POST['upd_announcement_id'] ?? '');
+  $upd_priority = trim($_POST['upd_priority'] ?? '');
+  $upd_title = trim($_POST['upd_title'] ?? '');
+  $upd_body = trim($_POST['upd_body'] ?? '');
+  $upd_start = trim($_POST['upd_start'] ?? '');
+  $upd_end = trim($_POST['upd_end'] ?? '');
+  $upd_link_url = trim($_POST['upd_link_url'] ?? '');
   $upd_link_text = trim($_POST['upd_link_text'] ?? '');
 
   if ($upd_id === '') {
     $errors['general'] = 'Announcement ID is required to update.';
   } else {
     $payload = array_filter([
-      'priority'  => $upd_priority ?: null,
-      'title'     => $upd_title ?: null,
-      'body'      => $upd_body ?: null,
-      'start'     => $upd_start ?: null,
-      'end'       => $upd_end ?: null,
-      'link_url'  => $upd_link_url ?: null,
+      'priority' => $upd_priority ?: null,
+      'title' => $upd_title ?: null,
+      'body' => $upd_body ?: null,
+      'start' => $upd_start ?: null,
+      'end' => $upd_end ?: null,
+      'link_url' => $upd_link_url ?: null,
       'link_text' => $upd_link_text ?: null,
     ], fn($v) => $v !== null && $v !== '');
 
@@ -151,6 +154,8 @@ $announcements = $searchTerm && empty($errors['search'])
 
 <!DOCTYPE html>
 <html lang="en">
+<?php include './shared/header.php'; ?>
+<!--
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -158,7 +163,7 @@ $announcements = $searchTerm && empty($errors['search'])
   <link rel="stylesheet" href="styles/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
-
+-->
 <body class="sb-expanded">
   <?= $nav->render($current) ?>
 
@@ -186,16 +191,19 @@ $announcements = $searchTerm && empty($errors['search'])
           <h2>Add a New Announcement</h2>
           <form method="POST" action="" novalidate style="width:99%;">
             <label for="announcement_id">Announcement ID</label>
-            <input type="text" id="announcement_id" name="announcement_id" value="<?= e($announcement_id) ?>" placeholder="e.g. a-101" required />
-            <?php if (!empty($errors['announcement_id'])): ?><div class="error"><?= e($errors['announcement_id']) ?></div><?php endif; ?>
+            <input type="text" id="announcement_id" name="announcement_id" value="<?= e($announcement_id) ?>"
+              placeholder="e.g. a-101" required />
+            <?php if (!empty($errors['announcement_id'])): ?>
+              <div class="error"><?= e($errors['announcement_id']) ?></div><?php endif; ?>
 
             <label for="priority">Priority</label>
             <select id="priority" name="priority" required>
-              <option value="low"    <?= ($priority === 'low') ? 'selected' : '' ?>>Low</option>
+              <option value="low" <?= ($priority === 'low') ? 'selected' : '' ?>>Low</option>
               <option value="medium" <?= ($priority === 'medium') ? 'selected' : '' ?>>Medium</option>
-              <option value="high"   <?= ($priority === 'high') ? 'selected' : '' ?>>High</option>
+              <option value="high" <?= ($priority === 'high') ? 'selected' : '' ?>>High</option>
             </select>
-            <?php if (!empty($errors['priority'])): ?><div class="error"><?= e($errors['priority']) ?></div><?php endif; ?>
+            <?php if (!empty($errors['priority'])): ?>
+              <div class="error"><?= e($errors['priority']) ?></div><?php endif; ?>
 
             <label for="title">Title</label>
             <input type="text" id="title" name="title" value="<?= e($title) ?>" required />
@@ -212,7 +220,8 @@ $announcements = $searchTerm && empty($errors['search'])
             <fieldset>
               <legend>Link Information</legend>
               <label for="link_url">Link URL</label>
-              <input type="url" id="link_url" name="link_url" value="<?= e($link_url) ?>" placeholder="https://example.com/details" />
+              <input type="url" id="link_url" name="link_url" value="<?= e($link_url) ?>"
+                placeholder="https://example.com/details" />
               <label for="link_text">Link Text</label>
               <input type="text" id="link_text" name="link_text" value="<?= e($link_text) ?>" placeholder="More info" />
             </fieldset>
@@ -226,11 +235,13 @@ $announcements = $searchTerm && empty($errors['search'])
           <h2>View Announcements</h2>
           <form method="post" action="" style="width:99%; display:flex; gap:.5rem; align-items:center;">
             <label for="search_term" style="flex:0 0 auto;">Search:</label>
-            <input type="text" id="search_term" name="search_term" value="<?= e($searchTerm) ?>" placeholder="ID, title, priority, or YYYY-MM-DD" style="flex:1 1 auto;" />
+            <input type="text" id="search_term" name="search_term" value="<?= e($searchTerm) ?>"
+              placeholder="ID, title, priority, or YYYY-MM-DD" style="flex:1 1 auto;" />
             <button type="submit" name="search">Search</button>
           </form>
           <br>
-          <?php if (!empty($errors['search'])): ?><div class="error"><?= e($errors['search']) ?></div><?php endif; ?>
+          <?php if (!empty($errors['search'])): ?>
+            <div class="error"><?= e($errors['search']) ?></div><?php endif; ?>
 
           <?php if (!empty($announcements)): ?>
             <ul>
@@ -242,7 +253,8 @@ $announcements = $searchTerm && empty($errors['search'])
                   <strong>Body:</strong> <?= e($a['body']) ?><br>
                   <strong>Start:</strong> <?= e($a['start']) ?> &nbsp; <strong>End:</strong> <?= e($a['end']) ?><br>
                   <?php if (!empty($a['link_url'])): ?>
-                    <strong>Link:</strong> <a href="<?= e($a['link_url']) ?>" target="_blank" rel="noopener"><?= e($a['link_text'] ?: $a['link_url']) ?></a>
+                    <strong>Link:</strong> <a href="<?= e($a['link_url']) ?>" target="_blank"
+                      rel="noopener"><?= e($a['link_text'] ?: $a['link_url']) ?></a>
                   <?php endif; ?>
                 </li>
               <?php endforeach; ?>
@@ -299,7 +311,8 @@ $announcements = $searchTerm && empty($errors['search'])
             <input type="text" id="del_announcement_id" name="del_announcement_id" required />
             <button type="submit" name="delete_announcement">Delete</button>
           </form>
-          <?php if (!empty($errors['delete'])): ?><div class="error"><?= e($errors['delete']) ?></div><?php endif; ?>
+          <?php if (!empty($errors['delete'])): ?>
+            <div class="error"><?= e($errors['delete']) ?></div><?php endif; ?>
         </div>
 
       </div>
@@ -312,4 +325,5 @@ $announcements = $searchTerm && empty($errors['search'])
   </footer>
   <script src="./js/script.js"></script>
 </body>
+
 </html>
