@@ -423,6 +423,8 @@ button {
 .dark .upcoming-events,
 .dark .selected-event,
 .dark .ann-card,
+.dark .announceBar,
+.dark .slider,
 .dark .event-item {
   background-color: #3b3b3b;
   color: #e0e0e0;

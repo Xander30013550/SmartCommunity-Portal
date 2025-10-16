@@ -72,7 +72,7 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
 
             <ul>
                 <li><a href="user_management.php">Manage Users</a></li>
-                <li><a href="#">Edit Announcements</a></li>
+                <li><a href="announcements_management.php">Edit Announcements</a></li>
             </ul>
         </section>
     </main> <!--    End page content    -->

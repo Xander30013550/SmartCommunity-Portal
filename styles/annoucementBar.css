@@ -3,13 +3,10 @@ main {
 }
 .slider {
   position: relative;
-  /*max-width: min(1100px, 92vw);*/
   margin: 0;
   margin-top: auto; 
   border-radius: 18px;
   background: #F8F8FF;
-  /*background: #f0f0f0;*/
-  /* this line hides the off-screen slides */
   overflow: hidden; /* or overflow: clip; */
 }
 .slider-track {
@@ -31,11 +28,18 @@ main {
   gap: .6rem;
   grid-template-rows: auto auto 1fr auto auto;
 }
-section.announceBar{
+.announceBar{
   position: sticky;
   bottom: calc(var(--footer-height) + some-margin);
 }
-.dots { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); display: flex; gap: .5rem; }
+.dots{
+  position: absolute;
+  left: 50%; 
+  bottom: .6rem;
+  transform: translateX(-50%); 
+  display: flex; 
+  gap: .5rem; 
+}
 .dots button { width: 10px; height: 10px; border-radius: 999px; border: 0; background: #7B2CBF; cursor: pointer; }
 .dots button[aria-current="true"] { background: #C77DFF; width: 22px; }
 .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border: 0; border-radius: 999px; background: rgba(255,255,255,.9); cursor: pointer; }

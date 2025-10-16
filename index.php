@@ -1,12 +1,6 @@
 <?php
 declare(strict_types=1);
 session_start();
-$_SESSION['user'] = [
-  'id' => 1,
-  'name' => 'John Waffles',
-  'email' => 'John.Waffles@nomnom.tasty',
-  'role' => 'admin'
-];
 libxml_use_internal_errors(true);
 
 require_once 'functions.php';

@@ -151,7 +151,7 @@ if (isset($_GET['delete_id'])) {
                 <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
                     Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong><br>
                     <a href="admin.php">Return to Dashboard</a>
-                    &nbsp;|&nbsp; <a href="#">Edit Announcements</a>
+                    &nbsp;|&nbsp; <a href="announcements_management.php">Edit Announcements</a>
                     &nbsp;|&nbsp; <a href="?logout=true">Logout</a>
                 </div>
 
