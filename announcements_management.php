@@ -155,15 +155,6 @@ $announcements = $searchTerm && empty($errors['search'])
 <!DOCTYPE html>
 <html lang="en">
 <?php include './shared/header.php'; ?>
-<!--
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Announcements Management - Smart Community Portal</title>
-  <link rel="stylesheet" href="styles/styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
--->
 <body class="sb-expanded">
   <?= $nav->render($current) ?>
 
