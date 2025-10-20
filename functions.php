@@ -1,9 +1,14 @@
 <?php
+declare(strict_types=1);
+
 //  This function escapes special HTML characters in a string to prevent XSS attacks, 
 // ensuring the output is safe for rendering in HTML contexts. It uses `htmlspecialchars` 
 // with `ENT_QUOTES` and UTF-8 encoding for maximum compatibility and security.
-function e(string $s): string {
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+function e(null|bool|int|float|string|\Stringable $s): string
+{
+    if ($s === null) return '';
+    if (is_bool($s)) $s = $s ? '1' : '0';
+    return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 }
 
 //  This function attempts to load and parse an XML file from a given path, returning a 

@@ -10,11 +10,12 @@ libxml_use_internal_errors(true);
 require_once 'functions.php';
 require_once 'auth.php';
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/db.php';
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
-use App\Announcements\AnnouncementsRepository;
 use App\Announcements\AnnouncementBarRenderer;
+use App\Announcements\DbAnnouncementsRepository;
 
 // --- app boot ---
 date_default_timezone_set('Australia/Perth');
@@ -23,7 +24,7 @@ $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
-$annRepo = new AnnouncementsRepository(__DIR__ . '/config/announcement.xml');
+$annRepo = new DbAnnouncementsRepository(db());
 $annBar = new AnnouncementBarRenderer($annRepo, [
   'autoplay' => true,
   'interval' => 4000,

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Announcements;
+require_once __DIR__ . '/AnnouncementsRepositoryInterface.php';
 use DateTime;
 use SimpleXMLElement;
 final class AnnouncementsRepository {

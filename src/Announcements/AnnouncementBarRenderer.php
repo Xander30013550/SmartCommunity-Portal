@@ -2,12 +2,13 @@
 declare(strict_types=1);
 
 namespace App\Announcements;
-
-final class AnnouncementBarRenderer {
-  //    This constructor initializes the object by injecting an `AnnouncementsRepository` instance
-  //    and optionally accepting an array of options, both stored as private properties.
-  public function __construct(
-        private AnnouncementsRepository $repo,
+require_once __DIR__ . '/AnnouncementsRepositoryInterface.php';
+final class AnnouncementBarRenderer
+{
+    //    This constructor initializes the object by injecting an `AnnouncementsRepository` instance
+    //    and optionally accepting an array of options, both stored as private properties.
+    public function __construct(
+        private AnnouncementsRepositoryInterface $repo,
         private array $options = []
     ) {}
 
