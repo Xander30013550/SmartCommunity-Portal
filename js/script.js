@@ -1,4 +1,7 @@
 // ===================== Sidebar Toggle =====================
+//  This function toggles the visibility state of a sidebar by adding or removing a CSS class, 
+//  updates icon visibility accordingly, and saves the collapsed state in localStorage. This ensures 
+//  the sidebar's open or closed state persists across sessions.
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const iconExpand = document.getElementById('icon-expand');
@@ -18,6 +21,10 @@ function toggleSidebar() {
     localStorage.setItem('sidebarCollapsed', isClosed ? 'true' : 'false');
 }
 
+//  This code runs when the page finishes loading and checks if the sidebar should be 
+//  collapsed based on a value saved in localStorage. It applies the appropriate CSS class 
+//  to the sidebar and toggles the visibility of expand/collapse icons to reflect the saved 
+//  state.
 window.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
 
@@ -42,6 +49,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===================== Feedback Form Functions =====================
+//  This function intercepts form submission, prevents the default behavior, and displays the 
+//  submitted form data in a hidden container before showing a success modal. It also resets the 
+//  form after submission.
 function handleFormSubmit(event) {
     event.preventDefault();
 
@@ -66,6 +76,10 @@ function handleFormSubmit(event) {
 }
 
 // ===================== Page Load =====================
+//  This script sets up event listeners once the DOM is loaded: it handles form submission and toggle 
+//  behavior for displaying form info, manages the display of a success modal including closing it by 
+//  clicking outside or on a close button, and implements a theme toggle with persistent state using 
+//  localStorage. It also applies the saved theme preference when the page loads.
 document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Feedback Form Listeners ----

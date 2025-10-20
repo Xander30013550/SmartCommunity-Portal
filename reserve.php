@@ -1,4 +1,9 @@
 <?php
+//  This PHP script handles an AJAX reservation form submission by first checking if the user is
+//  logged in via session. It validates input fields, connects securely to a MySQL database, 
+//  escapes user inputs to prevent SQL injection, inserts a new reservation record into the 
+//  `reservations` table, and returns a JSON response indicating success or failure.
+
 declare(strict_types=1);
 session_start();
 ini_set('display_errors', 1);

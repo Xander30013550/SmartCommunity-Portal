@@ -5,6 +5,9 @@
 $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
+//  This code returns an associative array mapping the namespace prefix `'App\\'` to the 
+//  corresponding directory path where the source files are located, enabling PSR-4 autoloading
+//  for that namespace. It tells the autoloader where to find classes within the `App` namespace.
 return array(
     'App\\' => array($baseDir . '/src'),
 );

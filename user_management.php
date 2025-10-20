@@ -1,4 +1,10 @@
 <?php
+//  This PHP script manages an admin-only user management page that handles login validation, logout, 
+//  user registration with form validation, user searching, and deletion. It initializes the app 
+//  environment, loads menu navigation, checks user roles to restrict access, processes POST requests 
+//  for registration and search, fetches user lists accordingly, and handles user deletion via GET 
+//  parameters, while providing success or error messages as feedback.
+
 declare(strict_types=1);
 
 session_start();
@@ -142,6 +148,9 @@ if (isset($_GET['delete_id'])) {
             <section>
                 <h1 class="page-title">Admin Portal - Add New User</h1>
 
+                <!--    This HTML snippet displays the logged-in user's name securely, along with 
+                        navigation links to the admin dashboard, announcement management, and a 
+                        logout option, all styled for spacing and readability.  -->
                 <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
                     Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong><br>
                     <a href="admin.php">Return to Dashboard</a>
@@ -258,6 +267,10 @@ if (isset($_GET['delete_id'])) {
                             <button type="submit" name="update_user">Update User</button>
                         </form>
 
+                        <!--    This PHP code handles a form submission to update a user's details by validating input fields, 
+                                then calling an update function and displaying success or error messages based on the operation's 
+                                outcome. It ensures all fields are filled before attempting the update and provides feedback 
+                                accordingly.  -->
                         <?php
                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
                                 $userId = (int)$_POST['user_id'];

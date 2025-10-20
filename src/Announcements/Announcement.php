@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace App\Announcements;
 use DateTime;
 use SimpleXMLElement;
-final class Announcement
-{
+final class Announcement {
     public string $id       = '';
     public string $priority = 'normal'; // high|normal|low
     public string $title    = '';
@@ -15,6 +14,8 @@ final class Announcement
     public string $category = 'General';
     public ?array $link     = null;     // ['url' => '', 'text' => '']
 
+    //  This constructor takes an associative array and dynamically assigns each 
+    //  key-value pair to the corresponding property of the object.
     public function __construct(array $data) {
         foreach ($data as $k => $v) $this->$k = $v;
     }

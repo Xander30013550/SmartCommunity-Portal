@@ -16,6 +16,10 @@ function getAnnouncements(): array {
 }
 
 /** @return array<int, array<string, string>> */
+//  This function searches announcements by a term, using full-text search if available and falling 
+//  back to LIKE queries otherwise, returning matched records ordered by start date, priority, and 
+//  update time. It supports exact matches on ID, priority, and dates, enhancing flexible search 
+//  capabilities.
 function searchAnnouncements(string $term): array {
     $term = trim($term);
     if ($term === '') return getAnnouncements();
@@ -65,7 +69,9 @@ function searchAnnouncements(string $term): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-
+//  This function validates announcement data, checks if an announcement ID is unique, 
+//  and inserts a new announcement into the database with timestamps, returning true on 
+//  success or an error message if it fails.
 function addAnnouncement(array $data) {
     $v = _validateAnnouncementData($data, false);
     if (!$v['ok']) return ['error' => implode(' ', $v['errors'])];
@@ -99,6 +105,9 @@ function addAnnouncement(array $data) {
 }
 
 /** Only provided keys are updated. */
+//  This function validates and updates specified fields of an announcement by ID, 
+//  dynamically building the SQL SET clause and updating the `updated_at` timestamp, 
+//  returning true on success or false on failure.
 function updateAnnouncement(string $id, array $changes): bool {
     $id = trim($id);
     if ($id === '') return false;
@@ -136,6 +145,8 @@ function updateAnnouncement(string $id, array $changes): bool {
     return $stmt->execute($params);
 }
 
+//  This function deletes an announcement by its trimmed ID and returns 
+// true if successful or false if the ID is empty or the deletion fails.
 function deleteAnnouncement(string $id): bool {
     $id = trim($id);
     if ($id === '') return false;
@@ -146,7 +157,10 @@ function deleteAnnouncement(string $id): bool {
 }
 
 /* =========================== Validation =========================== */
-
+//  This function validates announcement data, checking required fields for new entries, 
+//  ensuring priority values are correct, dates are properly formatted and ordered, URLs 
+//  are valid, and link text is provided if a URL exists, returning an array with validation 
+//  status and error messages.
 function _validateAnnouncementData(array $data, bool $isUpdate): array {
     $errors = [];
 
@@ -185,12 +199,17 @@ function _validateAnnouncementData(array $data, bool $isUpdate): array {
     return ['ok' => empty($errors), 'errors' => $errors];
 }
 
+//  This function checks if a string is a valid date in YYYY-MM-DD format by 
+//  parsing it with DateTime and verifying the exact format.
 function _validDateYmd(string $d): bool {
     $dt = DateTime::createFromFormat('Y-m-d', $d);
     return $dt && $dt->format('Y-m-d') === $d;
 }
 
 /* ============================ DB Utils ============================ */
+//  This function returns a singleton PDO connection to a MySQL database using defined 
+//  constants for host, database, user, password, and charset, with error handling and 
+//  default fetch mode set.
 function _db(): PDO {
     static $pdo = null;
     if ($pdo instanceof PDO) return $pdo;
@@ -211,12 +230,16 @@ function _db(): PDO {
     return $pdo;
 }
 
+//  This function prepares and executes a PDO statement with optional parameters, 
+//  then returns all results as an associative array or an empty array if none are found.
 function _fetchAllAssoc(PDO $pdo, string $sql, array $params = []): array {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
+//  This function executes a prepared PDO query with optional parameters and returns 
+//  the first column of the first row or null if no results are found.
 function _fetchValue(PDO $pdo, string $sql, array $params = []) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -224,6 +247,8 @@ function _fetchValue(PDO $pdo, string $sql, array $params = []) {
     return $val === false ? null : $val;
 }
 
+//  This function returns the current date and time as a string formatted like 
+//  "YYYY-MM-DD HH:MM:SS".
 function _now(): string {
     return (new DateTimeImmutable('now'))->format('Y-m-d H:i:s');
 }
@@ -231,6 +256,8 @@ function _now(): string {
 /* ========================== Search Helpers ========================= */
 
 /** Detect if FULLTEXT index exists (simple cache). */
+//  This function checks if the `announcements` table has a FULLTEXT index named 
+//  `ft_title_body` and caches the result to avoid repeated queries.
 function _hasFulltext(PDO $pdo): bool {
     static $cache = null;
     if ($cache !== null) return $cache;
@@ -242,6 +269,8 @@ function _hasFulltext(PDO $pdo): bool {
 }
 
 /** Convert raw term into a BOOLEAN MODE query string. */
+//  This function converts a search term into a MySQL full-text boolean query by prefixing 
+//  each word with a `+` to require its presence, preserving any existing `+` or `-` prefixes.
 function _toBooleanQuery(string $term): string {
     $parts = preg_split('/\s+/', trim($term));
     $parts = array_filter($parts, fn($p) => $p !== '');
@@ -251,6 +280,8 @@ function _toBooleanQuery(string $term): string {
 }
 
 /** Return Y-m-d if $s looks like a date; otherwise null. */
+//  This function trims a string and returns it if it's a valid YYYY-MM-DD date; 
+//  otherwise, it returns null.
 function _maybeYmd(string $s): ?string {
     $s = trim($s);
     return _validDateYmd($s) ? $s : null;

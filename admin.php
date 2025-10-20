@@ -1,4 +1,7 @@
 <?php
+//  This script ensures only logged-in admins access the page, redirects others accordingly, 
+//  handles logout by destroying the session, and sets up navigation and timezone for the app.
+
 declare(strict_types=1);
 session_start();
 libxml_use_internal_errors(true);

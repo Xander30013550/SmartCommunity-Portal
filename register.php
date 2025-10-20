@@ -1,4 +1,9 @@
 <?php
+//  This PHP script handles user registration by first redirecting already logged-in users based on their role. 
+//  It validates the submitted registration form data—checking name, email format, password length, and password 
+//  confirmation—and if valid, calls `registerUser()` to create the new user. Upon successful registration, it 
+//  logs the user in by storing their data in the session and redirects them to the homepage; otherwise, it 
+//  collects errors for display.
 
 declare(strict_types=1);
 

@@ -1,4 +1,8 @@
 <?php
+//  This script handles user login by validating credentials and redirecting users to the appropriate 
+//  dashboard based on their role. It also manages logout and displays error messages for invalid input 
+//  or login failures.
+
 declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';

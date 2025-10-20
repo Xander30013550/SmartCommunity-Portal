@@ -1,6 +1,9 @@
 <?php
-declare(strict_types=1);
+//  This script initializes the menu system by loading dependencies, creating a 
+//  MenuRepository and NavRenderer instance with config data, and sets the 
+//  current page from the request URI for navigation purposes.
 
+declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 use App\Menu\MenuRepository;

@@ -1,4 +1,8 @@
 <?php
+//  This script loads events from an XML file into an array, finds a selected event based on a 
+//  GET parameter, and defines a function to render individual event items with proper HTML 
+//  escaping. It also sets up navigation using your menu classes.
+
 declare(strict_types=1);
 session_start();
 libxml_use_internal_errors(true);
@@ -15,7 +19,8 @@ $user = $_SESSION['user']; // $_SESSION['user']['name'], ['email'], ['id']
 
 // -------------------- FUNCTIONS --------------------
 
-// Load events from XML
+//  This function loads events from an XML file, extracting details like id, title, description, date, 
+//  and location into an array, returning an empty array if the file or data is missing.
 function getEventItems(string $eventsPath): array {
     if (!file_exists($eventsPath)) return [];
 
@@ -38,6 +43,8 @@ function getEventItems(string $eventsPath): array {
     return $events;
 }
 
+//  This function outputs HTML for an event item, showing its title, date (or "TBA"), 
+//  location, and description, along with a button linking to select the event by its ID.
 function renderEventItem(array $e): void {
     $when = $e['date'] !== '' ? htmlspecialchars($e['date']) : 'TBA';
     $loc = $e['location'] !== '' ? ' · ' . htmlspecialchars($e['location']) : '';
@@ -151,33 +158,35 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: 'index.p
 </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('reservationForm');
-    const feedback = document.getElementById('reservationFeedback');
+    //  This script handles a reservation form submission via AJAX, sending form data to `reserve.php`, 
+    //  then displays success or error messages dynamically without reloading the page.
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('reservationForm');
+        const feedback = document.getElementById('reservationFeedback');
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault(); // prevent normal form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // prevent normal form submission
 
-        const formData = new FormData(form);
+            const formData = new FormData(form);
 
-        fetch('reserve.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            feedback.textContent = data.message;  
-            feedback.style.color = data.success ? 'green' : 'red';
-            console.log(data); // <-- logs PHP/DB result
-            if (data.success) form.reset();
-        })
-        .catch(err => {
-            feedback.textContent = "Error submitting reservation.";
-            feedback.style.color = 'red';
-            console.error(err);
+            fetch('reserve.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                feedback.textContent = data.message;  
+                feedback.style.color = data.success ? 'green' : 'red';
+                console.log(data); // <-- logs PHP/DB result
+                if (data.success) form.reset();
+            })
+            .catch(err => {
+                feedback.textContent = "Error submitting reservation.";
+                feedback.style.color = 'red';
+                console.error(err);
+            });
         });
     });
-});
 
 </script>
 <script src="./js/script.js"></script>

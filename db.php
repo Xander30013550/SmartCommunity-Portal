@@ -1,6 +1,9 @@
 <?php
 require_once 'config.php';
 
+//  This function establishes and returns a reusable PDO database connection using configured constants,
+//  with error handling and default fetch mode set to associative arrays. It uses a static variable to 
+//  ensure the connection is only created once per request.
 function db(): PDO {
     static $pdo;
     if (!$pdo) {

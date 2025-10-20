@@ -2,6 +2,8 @@
 $path = realpath(__DIR__ . '/../db.php');
 require_once $path;
 
+//  This function validates user input for a feedback form and, if no errors are found, inserts the data into a database. 
+//  If validation fails or the database operation is unsuccessful, it returns an array of error messages.
 function addFeedbackToTable (string $name, string $email, string $subject, string $message): array {
     file_put_contents(__DIR__ . '/../debug_entered.txt', "Entered addFeedbackToTable()\n", FILE_APPEND);
     $errors = [];

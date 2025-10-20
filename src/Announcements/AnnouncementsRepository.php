@@ -4,15 +4,18 @@ declare(strict_types=1);
 namespace App\Announcements;
 use DateTime;
 use SimpleXMLElement;
-final class AnnouncementsRepository
-{
-    public function __construct(
-        private string $xmlPath
-    ) {
-    }
+final class AnnouncementsRepository {
+    //  This constructor accepts a string parameter `$xmlPath` and assigns it
+    //  to a private property of the same name within the class.
+    public function __construct(private string $xmlPath){ }
 
-    public function allCurrent(DateTime $now = new DateTime()): array
-    {
+    //  This method loads announcements from an XML file at `$this->xmlPath`, safely 
+    //  extracting all `<announcement>` nodes regardless of their nesting structure. 
+    //  It filters announcements to include only those currently active based on optional
+    //  start and end dates compared to `$now`, creates `Announcement` objects from the 
+    //  valid data, then sorts them by priority (highest first) and earliest end date before 
+    //  returning the sorted array.
+    public function allCurrent(DateTime $now = new DateTime()): array {
         $xml = @simplexml_load_file($this->xmlPath, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
         if ($xml === false)
             return [];
@@ -76,8 +79,10 @@ final class AnnouncementsRepository
         return $items;
     }
 
-    private static function parseDate(string $raw, bool $inclusive = false): ?DateTime
-    {
+    //  This method converts a date string into a `DateTime` object, returning `null` if the input is empty,
+    //  and if the `$inclusive` flag is true, it sets the time to the end of the day (23:59:59) to treat the 
+    //  date as inclusive.
+    private static function parseDate(string $raw, bool $inclusive = false): ?DateTime {
         $raw = trim($raw);
         if ($raw === '')
             return null;
@@ -87,8 +92,9 @@ final class AnnouncementsRepository
         return $dt;
     }
 
-    private static function weightOf(string $p): int
-    {
+    //  This method assigns a numeric weight to a priority string—returning 3 for 'high', 2 for 'normal', 
+    // 1 for 'low' or any other unspecified value—to help with sorting or ranking.
+    private static function weightOf(string $p): int {
         return match (strtolower($p)) {
             'high' => 3,
             'normal' => 2,

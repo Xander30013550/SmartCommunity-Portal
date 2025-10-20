@@ -1,4 +1,8 @@
 <?php
+//  This script initializes the main application environment by setting the timezone, loading menu and 
+//  announcement components, and determining the current user's role. It prepares everything needed to 
+//  render the navigation and announcement bar, while checking if the user is an admin.
+
 declare(strict_types=1);
 session_start();
 libxml_use_internal_errors(true);

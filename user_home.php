@@ -1,4 +1,8 @@
 <?php
+//  This PHP script ensures only logged-in general users (non-admins) can access the page, 
+//  redirecting others accordingly. It loads announcements from an XML file, filters them
+//  by current date and priority, sorts them, and prepares them for display, while also 
+//  handling logout requests and setting up navigation.
 declare(strict_types=1);
 session_start();
 libxml_use_internal_errors(true);

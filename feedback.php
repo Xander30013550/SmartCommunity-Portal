@@ -1,4 +1,8 @@
 <?php
+//  This script handles both the display of FAQ items and the processing of feedback form submissions. 
+//  It loads menu and FAQ data, parses the relevant XML file for FAQs, and if the request is a `POST`, 
+//  it validates and stores feedback in the database, returning a JSON response for success or failure.
+
 declare(strict_types=1);
 
 libxml_use_internal_errors(true);
@@ -69,6 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     exit;
 }
 
+//  This function parses an FAQ XML file and extracts question-answer pairs from a `<FAQList>` node, 
+//  prioritizing the one with `id="primary"` or falling back to the first available. It returns an 
+//  array of FAQs with `id`, `summary`, and `description`, preserving the XML order by default.
 function getFaqItems(string $faqPath): array {
     $xml = loadXml($faqPath);
     if (!$xml)

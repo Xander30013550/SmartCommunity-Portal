@@ -1,4 +1,9 @@
 <?php
+//  This admin page script manages user session and authorization, handles adding, searching, 
+//  updating, and deleting announcements with form data, and fetches announcement lists for 
+//  display. It includes error handling, success messages, and input sanitization to maintain 
+//  proper workflow and security.
+
 declare(strict_types=1);
 
 session_start();

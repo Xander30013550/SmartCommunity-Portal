@@ -1,4 +1,8 @@
 <?php
+//  This script initializes the application by setting up autoloading, navigation, and session management. 
+//  It handles logout requests, loads required functions and authentication helpers, and prepares the 
+//  current user and route context for rendering or logic execution.
+
 declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
