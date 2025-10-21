@@ -20,3 +20,11 @@ function loadXml(string $path): ?SimpleXMLElement {
     $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
     return $xml !== false ? $xml : null;
 }
+
+//  This function prepares and executes a PDO statement with optional parameters, 
+//  then returns all results as an associative array or an empty array if none are found.
+function _fetchAllAssoc(PDO $pdo, string $sql, array $params = []): array {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}

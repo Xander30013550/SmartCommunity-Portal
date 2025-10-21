@@ -230,13 +230,6 @@ function _db(): PDO {
     return $pdo;
 }
 
-//  This function prepares and executes a PDO statement with optional parameters, 
-//  then returns all results as an associative array or an empty array if none are found.
-function _fetchAllAssoc(PDO $pdo, string $sql, array $params = []): array {
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-}
 
 //  This function executes a prepared PDO query with optional parameters and returns 
 //  the first column of the first row or null if no results are found.

@@ -1,55 +1,61 @@
 <?php
-//  This script loads events from an XML file into an array, finds a selected event based on a 
-//  GET parameter, and defines a function to render individual event items with proper HTML 
-//  escaping. It also sets up navigation using your menu classes.
-
 declare(strict_types=1);
+
 session_start();
 libxml_use_internal_errors(true);
 
+require_once 'functions.php';
+require_once 'auth.php';
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/db.php';
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
+$user = $_SESSION['user'] ?? [];
 
+/* ===================== Event DB Functions ===================== */
 
-$user = $_SESSION['user']; // $_SESSION['user']['name'], ['email'], ['id']
-
-// -------------------- FUNCTIONS --------------------
-
-//  This function loads events from an XML file, extracting details like id, title, description, date, 
-//  and location into an array, returning an empty array if the file or data is missing.
-function getEventItems(string $eventsPath): array {
-    if (!file_exists($eventsPath)) return [];
-
-    $xml = simplexml_load_file($eventsPath);
-    if (!$xml) return [];
-
-    $list = $xml->eventlist[0] ?? null;
-    if (!$list) return [];
-
-    $events = [];
-    foreach ($list->event as $node) {
-        $events[] = [
-            'id' => (string)($node['id'] ?? ''),
-            'title' => trim((string)($node->title ?? 'Untitled Event')),
-            'description' => trim((string)($node->description ?? '')),
-            'date' => trim((string)($node->date ?? '')),
-            'location' => trim((string)($node->location ?? '')),
-        ];
-    }
-    return $events;
+/** @return array<int, array<string,string>> */
+function getEventItems(): array
+{
+    $pdo = db();
+    $sql = "SELECT id, title, description, date_info AS date, location, cta_label
+            FROM events
+            ORDER BY date_info ASC, title ASC";
+    return _fetchAllAssoc($pdo, $sql);
 }
 
-//  This function outputs HTML for an event item, showing its title, date (or "TBA"), 
-//  location, and description, along with a button linking to select the event by its ID.
-function renderEventItem(array $e): void {
+/** @return array<string,string>|null */
+function getEventById(string $id): ?array
+{
+    $id = trim($id);
+    if ($id === '')
+        return null;
+
+    $pdo = _db();
+    $stmt = $pdo->prepare("SELECT id, title, description, date_info AS date, location, cta_label
+                           FROM events WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ?: null;
+}
+
+/* ===================== Load Events ===================== */
+
+$eventsItems = getEventItems();
+
+$selectedEventId = $_GET['event'] ?? null;
+$selectedEvent = $selectedEventId ? getEventById($selectedEventId) : null;
+
+/* ===================== Render Event HTML ===================== */
+
+function renderEventItem(array $e): void
+{
     $when = $e['date'] !== '' ? htmlspecialchars($e['date']) : 'TBA';
     $loc = $e['location'] !== '' ? ' · ' . htmlspecialchars($e['location']) : '';
     $ctaUrl = '?event=' . rawurlencode($e['id']);
-    $ctaLabel = 'Select Event';
+    $ctaLabel = $e['cta_label'] ?? 'Select Event';
     ?>
     <div class="event-item">
         <div>
@@ -64,132 +70,104 @@ function renderEventItem(array $e): void {
     <?php
 }
 
-// -------------------- LOAD EVENTS --------------------
-$eventsPath = __DIR__ . '/config/events.xml';
-$eventsItems = getEventItems($eventsPath);
+/* ===================== Navigation ===================== */
 
-if (empty($eventsItems)) {
-    $eventsItems = [
-        ['id'=>'Event1','title'=>'Event1','description'=>'words','date'=>'never','location'=>'nowhere']
-    ];
-}
-
-// Selected Event
-$selectedEventId = $_GET['event'] ?? null;
-$selectedEvent = null;
-if ($selectedEventId) {
-    foreach ($eventsItems as $ev) {
-        if ($ev['id'] === $selectedEventId) {
-            $selectedEvent = $ev;
-            break;
-        }
-    }
-}
-
-// -------------------- NAVIGATION --------------------
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
-$current = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: 'index.php');
-?>
+$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-    <?php include './shared/header.php'; ?>
+<?php include './shared/header.php'; ?>
+
 <body class="sb-expanded">
     <?= $nav->render($current) ?>
 
-    <!--    Page Content    -->
-        
     <main>
         <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
 
         <div class="upcoming-events">
             <h2>Upcoming Events</h2>
-            <?php foreach ($eventsItems as $ev) {
-                renderEventItem($ev);
-            } ?>
+            <?php foreach ($eventsItems as $ev)
+                renderEventItem($ev); ?>
         </div>
 
-    <div class="selected-event">
-        <h2>Selected Event:</h2>
-        <?php if ($selectedEvent): ?>
-            <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
-            <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?></p>
-        <?php else: ?>
-            <p>Please select an event to see details here.</p>
-        <?php endif; ?>
-    </div>
-
-    <div class="selected-event">
-        <h2>Make a Reservation</h2>
-        <div class="form-inputs">
-            <form id="reservationForm" method="POST">
-                <div class="field">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
-                </div>
-
-                <div class="field">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
-                </div>
-
-                <div class="field">
-                    <label for="amount">Amount of people:</label>
-                    <input type="number" id="amount" name="amount" required>
-                </div>
-
-                <input type="hidden" name="eventName" value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
-                <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
-                <input type="hidden" name="eventLocation" value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
-
-                <div class="field">
-                    <button type="submit">Submit Reservation</button>
-                </div>
-
-                <div id="reservationFeedback"></div>
-            </form>
+        <div class="selected-event">
+            <h2>Selected Event:</h2>
+            <?php if ($selectedEvent): ?>
+                <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
+                    <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?>
+                </p>
+            <?php else: ?>
+                <p>Please select an event to see details here.</p>
+            <?php endif; ?>
         </div>
-    </div>
-</main>
 
-<footer>
-&copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
-</footer>
+        <div class="selected-event">
+            <h2>Make a Reservation</h2>
+            <div class="form-inputs">
+                <form id="reservationForm" method="POST">
+                    <div class="field">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+                    </div>
+                    <div class="field">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email"
+                            value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                    </div>
+                    <div class="field">
+                        <label for="amount">Amount of people:</label>
+                        <input type="number" id="amount" name="amount" required>
+                    </div>
 
-<script>
-    //  This script handles a reservation form submission via AJAX, sending form data to `reserve.php`, 
-    //  then displays success or error messages dynamically without reloading the page.
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('reservationForm');
-        const feedback = document.getElementById('reservationFeedback');
+                    <input type="hidden" name="eventName"
+                        value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
+                    <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
+                    <input type="hidden" name="eventLocation"
+                        value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // prevent normal form submission
+                    <div class="field">
+                        <button type="submit">Submit Reservation</button>
+                    </div>
+                    <div id="reservationFeedback"></div>
+                </form>
+            </div>
+        </div>
+    </main>
 
-            const formData = new FormData(form);
+    <footer>
+        &copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
+    </footer>
 
-            fetch('reserve.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                feedback.textContent = data.message;  
-                feedback.style.color = data.success ? 'green' : 'red';
-                console.log(data); // <-- logs PHP/DB result
-                if (data.success) form.reset();
-            })
-            .catch(err => {
-                feedback.textContent = "Error submitting reservation.";
-                feedback.style.color = 'red';
-                console.error(err);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('reservationForm');
+            const feedback = document.getElementById('reservationFeedback');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+
+                fetch('reserve.php', { method: 'POST', body: formData })
+                    .then(res => res.json())
+                    .then(data => {
+                        feedback.textContent = data.message;
+                        feedback.style.color = data.success ? 'green' : 'red';
+                        if (data.success) form.reset();
+                    })
+                    .catch(err => {
+                        feedback.textContent = "Error submitting reservation.";
+                        feedback.style.color = 'red';
+                        console.error(err);
+                    });
             });
         });
-    });
+    </script>
 
-</script>
-<script src="./js/script.js"></script>
-
+    <script src="./js/script.js"></script>
 </body>
+
 </html>
