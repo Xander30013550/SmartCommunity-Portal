@@ -162,6 +162,18 @@ CREATE TABLE Reservations (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 ```
+
+### Events Table
+```sql
+CREATE TABLE events (
+    id VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    date_info VARCHAR(50),
+    location VARCHAR(255),
+    cta_label VARCHAR(100)
+)
+```
 ---
 
 ## 📜 License
