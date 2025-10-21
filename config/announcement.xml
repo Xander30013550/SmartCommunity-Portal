@@ -8,7 +8,7 @@
     <link url="https://citylink.example/works/power" text="More info"/>
   </announcement>
 
-  <announcement id="a-102" priority="normal">
+  <announcement id="a-102" priority="medium">
     <title>Community Fair</title>
     <body>Food stalls, live music, kids zone at Hearth Park.</body>
     <start>2025-09-01</start>

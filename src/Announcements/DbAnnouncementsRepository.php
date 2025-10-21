@@ -21,7 +21,7 @@ final class DbAnnouncementsRepository implements AnnouncementsRepositoryInterfac
             WHERE ( `start` IS NULL OR `start` <= :today )
               AND ( `end`   IS NULL OR `end`   >= :today )
             ORDER BY
-              FIELD(priority, 'high','normal','low') DESC,
+              FIELD(priority, 'high','medium','low') DESC,
               COALESCE(`start`, '1970-01-01') DESC,
               updated_at DESC
         ";
@@ -34,7 +34,7 @@ final class DbAnnouncementsRepository implements AnnouncementsRepositoryInterfac
         foreach ($rows as $r) {
             $items[] = new Announcement([
                 'id'       => (string)$r['id'],
-                'priority' => $r['priority'] ?? 'normal',
+                'priority' => $r['priority'] ?? 'medium',
                 'title'    => $r['title'] ?? '',
                 'body'     => $r['body'] ?? '',
                 'start'    => isset($r['start']) ? new DateTime($r['start']) : null,

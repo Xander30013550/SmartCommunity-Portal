@@ -50,7 +50,7 @@ body { background: var(--surface); color: var(--text); }
 }
 
 .ann-card {
-  background: turquoise;          /* let surface show through */
+  background: white;          /* let surface show through */
   color: inherit;                   /* no forced light text */
   padding: 0rem clamp(0rem, 2vw, 1.6rem);
   display: grid;

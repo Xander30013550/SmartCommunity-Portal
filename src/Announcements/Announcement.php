@@ -6,7 +6,7 @@ use DateTime;
 use SimpleXMLElement;
 final class Announcement {
     public string $id       = '';
-    public string $priority = 'normal'; // high|normal|low
+    public string $priority = 'medium'; // high|medium|low
     public string $title    = '';
     public string $body     = '';
     public ?DateTime $start = null;

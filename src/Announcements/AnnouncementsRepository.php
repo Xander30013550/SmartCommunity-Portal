@@ -56,7 +56,7 @@ final class AnnouncementsRepository {
 
             $items[] = new Announcement([
                 'id' => (string) ($a['id'] ?? ''),
-                'priority' => strtolower(trim((string) ($a['priority'] ?? 'normal'))),
+                'priority' => strtolower(trim((string) ($a['priority'] ?? 'medium'))),
                 'title' => trim((string) $a->title),
                 'body' => trim((string) $a->body),
                 'start' => $start,
@@ -93,12 +93,12 @@ final class AnnouncementsRepository {
         return $dt;
     }
 
-    //  This method assigns a numeric weight to a priority string—returning 3 for 'high', 2 for 'normal', 
+    //  This method assigns a numeric weight to a priority string—returning 3 for 'high', 2 for 'medium', 
     // 1 for 'low' or any other unspecified value—to help with sorting or ranking.
     private static function weightOf(string $p): int {
         return match (strtolower($p)) {
             'high' => 3,
-            'normal' => 2,
+            'medium' => 2,
             'low' => 1,
             default => 1,
         };
