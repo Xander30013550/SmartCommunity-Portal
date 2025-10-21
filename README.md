@@ -111,7 +111,7 @@ This project will be delivered by a self-managed student development team, rotat
 ```sql
 CREATE TABLE announcements (
   id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  priority    ENUM('high','normal','low') NOT NULL DEFAULT 'normal',
+  priority    ENUM('high','medium','low') NOT NULL DEFAULT 'medium',
   title       VARCHAR(200) NOT NULL,
   body        TEXT NOT NULL,
   `start`     DATE NULL,
