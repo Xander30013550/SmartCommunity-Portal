@@ -1,4 +1,8 @@
 <?php
+//  This script initializes the menu system by loading dependencies, creating a 
+//  MenuRepository and NavRenderer instance with config data, and sets the 
+//  current page from the request URI for navigation purposes.
+
 declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
@@ -11,20 +15,17 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> Smart Community Portal </title>
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-    </head>
+    <?php include './shared/header.php'; ?>
 
-    <!--    Main Section    -->
-    <body class="sb-expanded">        
-        <?= $nav->render($current) ?>
-        <!--    Page Content    -->
-        <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
+<!--    Main Section    -->
+
+<body class="sb-expanded">
+    <?= $nav->render($current) ?>
+
+    <!--    Page Content    -->
+        
+    <main>
+        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo"/><br>
 
         <div class="section">
             <h2>Our Mission</h2>
@@ -92,6 +93,7 @@ $current = $_SERVER['REQUEST_URI'] ?? '/index.php';
             </ul>
         </div>
 
+        <!--    Contact Details      -->
         <div class="section contact-info">
             <h2>Contact Us</h2>
             <p><strong>Email:</strong> contact@citylink.gov.au</p>

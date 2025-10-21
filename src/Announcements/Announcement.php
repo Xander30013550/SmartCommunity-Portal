@@ -1,0 +1,22 @@
+<?php 
+declare(strict_types=1);
+
+namespace App\Announcements;
+use DateTime;
+use SimpleXMLElement;
+final class Announcement {
+    public string $id       = '';
+    public string $priority = 'medium'; // high|medium|low
+    public string $title    = '';
+    public string $body     = '';
+    public ?DateTime $start = null;
+    public ?DateTime $end   = null;
+    public string $category = 'General';
+    public ?array $link     = null;     // ['url' => '', 'text' => '']
+
+    //  This constructor takes an associative array and dynamically assigns each 
+    //  key-value pair to the corresponding property of the object.
+    public function __construct(array $data) {
+        foreach ($data as $k => $v) $this->$k = $v;
+    }
+}

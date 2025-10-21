@@ -1,149 +1,107 @@
 <?php
+//  This script loads events from an XML file into an array, finds a selected event based on a 
+//  GET parameter, and defines a function to render individual event items with proper HTML 
+//  escaping. It also sets up navigation using your menu classes.
+
 declare(strict_types=1);
+session_start();
 libxml_use_internal_errors(true);
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/functions.php';
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
-// Saves Event on Selected Event button click
-$eventsPath  = __DIR__ . '/config/events.xml';
+
+
+$user = $_SESSION['user']; // $_SESSION['user']['name'], ['email'], ['id']
+
+// -------------------- FUNCTIONS --------------------
+
+//  This function loads events from an XML file, extracting details like id, title, description, date, 
+//  and location into an array, returning an empty array if the file or data is missing.
+function getEventItems(string $eventsPath): array {
+    if (!file_exists($eventsPath)) return [];
+
+    $xml = simplexml_load_file($eventsPath);
+    if (!$xml) return [];
+
+    $list = $xml->eventlist[0] ?? null;
+    if (!$list) return [];
+
+    $events = [];
+    foreach ($list->event as $node) {
+        $events[] = [
+            'id' => (string)($node['id'] ?? ''),
+            'title' => trim((string)($node->title ?? 'Untitled Event')),
+            'description' => trim((string)($node->description ?? '')),
+            'date' => trim((string)($node->date ?? '')),
+            'location' => trim((string)($node->location ?? '')),
+        ];
+    }
+    return $events;
+}
+
+//  This function outputs HTML for an event item, showing its title, date (or "TBA"), 
+//  location, and description, along with a button linking to select the event by its ID.
+function renderEventItem(array $e): void {
+    $when = $e['date'] !== '' ? htmlspecialchars($e['date']) : 'TBA';
+    $loc = $e['location'] !== '' ? ' · ' . htmlspecialchars($e['location']) : '';
+    $ctaUrl = '?event=' . rawurlencode($e['id']);
+    $ctaLabel = 'Select Event';
+    ?>
+    <div class="event-item">
+        <div>
+            <strong><?= htmlspecialchars($e['title']) ?></strong><br>
+            <small><?= $when . $loc ?></small><br>
+            <?php if ($e['description'] !== ''): ?>
+                Description: <?= htmlspecialchars($e['description']) ?>
+            <?php endif; ?>
+        </div>
+        <a class="uniform-button" href="<?= htmlspecialchars($ctaUrl) ?>"><?= htmlspecialchars($ctaLabel) ?></a>
+    </div>
+    <?php
+}
+
+// -------------------- LOAD EVENTS --------------------
+$eventsPath = __DIR__ . '/config/events.xml';
 $eventsItems = getEventItems($eventsPath);
 
-// If xml is empty, fills default values
 if (empty($eventsItems)) {
     $eventsItems = [
-        [
-            'id' => 'Event1',
-            'title' => 'Event1',
-            'description' => 'words',
-            'date' => 'never',
-            'location' => 'nowhere'
-        ],
+        ['id'=>'Event1','title'=>'Event1','description'=>'words','date'=>'never','location'=>'nowhere']
     ];
 }
 
-// Error Catch in case selected event was null
+// Selected Event
 $selectedEventId = $_GET['event'] ?? null;
-$selectedEvent   = null;
-
-if ($selectedEventId !== null) {
+$selectedEvent = null;
+if ($selectedEventId) {
     foreach ($eventsItems as $ev) {
-        if ((string)($ev['id'] ?? '') === (string)$selectedEventId) {
+        if ($ev['id'] === $selectedEventId) {
             $selectedEvent = $ev;
             break;
         }
     }
 }
 
-
+// -------------------- NAVIGATION --------------------
 $menuRepo = new MenuRepository(__DIR__ . '/config');
-$nav      = new NavRenderer($menuRepo);
-
-$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
-function e(string $s): string
-{
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
-}
-/**
- * Load and parse an XML file safely. Returns SimpleXMLElement|null.
- */
-function loadXml(string $path): ?SimpleXMLElement
-{
-    if (!is_file($path))
-        return null;
-    $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
-    return $xml !== false ? $xml : null;
-}
-
-function getEventItems(string $eventsPath): array
-{
-    $xml = loadXml($eventsPath);
-    if (!$xml)
-        return [];
-
-    // Pick the first <eventlist> or the one with id="primary"
-    $list = $xml->eventlist ?? null;
-    if (!$list && isset($xml->eventlist)) {
-        foreach ($xml->eventlist as $candidate) {
-            if ((string) ($candidate['id'] ?? '') === 'primary') {
-                $list = $candidate;
-                break;
-            }
-        }
-        // If still null, default to the first one
-        if (!$list && isset($xml->eventlist[0]))
-            $list = $xml->eventlist[0];
-    }
-
-    if (!$list)
-        return [];
-
-    $events = [];
-    foreach ($list->event as $node) {
-        $events[] = [
-            'id' => (string) ($node['id'] ?? ''),
-            'title' => trim((string) ($node->title ?? 'Untitled Event')),
-            'description' => trim((string) ($node->description ?? '')),
-            'date' => trim((string) ($node->date ?? '')),
-            'location' => trim((string) ($node->location ?? '')),
-        ];
-    }
-
-    return $events;
-}
-function renderEventItem(array $e): void
-{
-    $when = $e['date'] !== '' ? e($e['date']) : 'TBA';
-    $loc = $e['location'] !== '' ? ' · ' . e($e['location']) : '';
-    // You don't have a CTA in XML yet; we can derive a default route using id
-    $ctaUrl = '?event=' . rawurlencode($e['id']);
-    $ctaLabel = 'Select Event';
-    ?>
-    <div class="event-item">
-        <div>
-            <strong><?= e($e['title']) ?></strong><br>
-            <small><?= $when . $loc ?></small><br>
-            <?php if ($e['description'] !== ''): ?>
-                Description: <?= e($e['description']) ?>
-            <?php endif; ?>
-        </div>
-        <a class="uniform-button" href="<?= e($ctaUrl) ?>"><?= e($ctaLabel) ?></a>
-    </div>
-    <?php
-}
-$eventsPath = __DIR__ . '/config/events.xml';
-$eventsItems = getEventItems($eventsPath);
-if (empty($eventsItems)) {
-    $eventsItems = [
-        ['id' => 'Event1', 'title' => 'Event1', 'description' => 'words', 'date' => 'never', 'location' => 'nowhere'],
-    ];
-}
-
-// Determine "active" item based on current path
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
+$nav = new NavRenderer($menuRepo);
+$current = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: 'index.php');
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title> Smart Community Portal </title>
-    <link rel="stylesheet" href="./styles/styles.css" />
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
-
-<!--    Main Section    -->
-
+    <?php include './shared/header.php'; ?>
 <body class="sb-expanded">
     <?= $nav->render($current) ?>
 
     <!--    Page Content    -->
+        
     <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
+        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
 
         <div class="upcoming-events">
             <h2>Upcoming Events</h2>
@@ -152,57 +110,86 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
             } ?>
         </div>
 
-        <!-- Selected Event Field Box -->
-        <div class="selected-event">
-            <div id="userSelectedEvent">
-                <h2>Selected Event:</h2>
-                <?php if ($selectedEvent): ?>
-                <div class="event-details">
-                    <span class="event-title">
-                        <span class="label">Event:</span> <?= e($selectedEvent['title']) ?>
-                    </span>
-                    <span class="event-info">
-                        <span class="label">Date:</span> <?= e($selectedEvent['date']) ?>
-                        <span class="separator">|</span>
-                        <span class="label">Location:</span> <?= e($selectedEvent['location']) ?>
-                    </span>
+    <div class="selected-event">
+        <h2>Selected Event:</h2>
+        <?php if ($selectedEvent): ?>
+            <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
+            <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?></p>
+        <?php else: ?>
+            <p>Please select an event to see details here.</p>
+        <?php endif; ?>
+    </div>
+
+    <div class="selected-event">
+        <h2>Make a Reservation</h2>
+        <div class="form-inputs">
+            <form id="reservationForm" method="POST">
+                <div class="field">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
                 </div>
-                <?php else: ?>
-                    <p>Please select an event to see details here.</p>
-                <?php endif; ?>
-            </div>
+
+                <div class="field">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                </div>
+
+                <div class="field">
+                    <label for="amount">Amount of people:</label>
+                    <input type="number" id="amount" name="amount" required>
+                </div>
+
+                <input type="hidden" name="eventName" value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
+                <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
+                <input type="hidden" name="eventLocation" value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
+
+                <div class="field">
+                    <button type="submit">Submit Reservation</button>
+                </div>
+
+                <div id="reservationFeedback"></div>
+            </form>
         </div>
+    </div>
+</main>
 
+<footer>
+&copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
+</footer>
 
+<script>
+    //  This script handles a reservation form submission via AJAX, sending form data to `reserve.php`, 
+    //  then displays success or error messages dynamically without reloading the page.
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('reservationForm');
+        const feedback = document.getElementById('reservationFeedback');
 
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // prevent normal form submission
 
-        <div class="selected-event">
-            <div class="form-inputs">
-                <label for="name">Name: (Autofill if login)</label>
-                <input type="text" id="name" name="name">
+            const formData = new FormData(form);
 
-                <label for="email">Email: (Autofill if login)</label>
-                <input type="email" id="email" name="email">
+            fetch('reserve.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                feedback.textContent = data.message;  
+                feedback.style.color = data.success ? 'green' : 'red';
+                console.log(data); // <-- logs PHP/DB result
+                if (data.success) form.reset();
+            })
+            .catch(err => {
+                feedback.textContent = "Error submitting reservation.";
+                feedback.style.color = 'red';
+                console.error(err);
+            });
+        });
+    });
 
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone">
+</script>
+<script src="./js/script.js"></script>
 
-                <label for="amount">Amount of people:</label>
-                <input type="number" id="amount" name="amount">
-
-                <button class="submit-button">Submit</button>
-            </div>
-        </div>
-    </main>
-    <!--    End page content    -->
-
-    <!--    Footer section      -->
-    <Footer>
-        &copy; 2025 CityLink Initiatives. &nbsp;
-        <a href="privacy.php"> Privacy Policy </a>
-    </Footer>
-
-    <script type="text/javascript" src="./js/script.js" defer></script>
 </body>
-
 </html>

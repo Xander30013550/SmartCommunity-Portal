@@ -105,7 +105,71 @@ This project will be delivered by a self-managed student development team, rotat
 
 ---
 
+## 💾 SQL Queries
+
+### Announcements Table
+```sql
+CREATE TABLE announcements (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  priority    ENUM('high','medium','low') NOT NULL DEFAULT 'medium',
+  title       VARCHAR(200) NOT NULL,
+  body        TEXT NOT NULL,
+  `start`     DATE NULL,
+  `end`       DATE NULL,
+  category    VARCHAR(100) NOT NULL DEFAULT 'General',
+  link_url    VARCHAR(500) NULL,
+  link_text   VARCHAR(200) NULL,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_dates (`start`, `end`)
+);
+```
+
+### Users Table
+```sql
+CREATE TABLE `citylink`.`users` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(75) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `role` VARCHAR(10) NOT NULL DEFAULT 'user',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+```
+
+### Feedback Table
+```sql
+CREATE TABLE feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+### Reservations Table
+```sql
+CREATE TABLE Reservations (
+  ReservationID INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  AmountOfPeople INT NOT NULL,
+  EventName VARCHAR(150) NOT NULL,
+  EventTime DATETIME NOT NULL,
+  EventLocation VARCHAR(200) NOT NULL,
+  CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+```
+---
+
 ## 📜 License
 
 This project is for educational purposes only.  
 No real personal data will be collected during development.
+
+
+---
+
+**End of Document**

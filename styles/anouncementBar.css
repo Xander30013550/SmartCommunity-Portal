@@ -1,0 +1,106 @@
+main {
+  flex: 1; 
+}
+:root {
+  --surface: #f7f7f7;   /* light surface (matches body) */
+  --text:    #10002B;
+  --footer-height: 64px; /* adjust to your real footer */
+}
+
+.dark {
+  --surface: #403b3b;   /* dark surface */
+  --text:    #e0e0e0;
+}
+
+/* Body picks up tokens so the slider can just inherit */
+body { background: var(--surface); color: var(--text); }
+
+/* ---- Announcement bar & slider ---- */
+.announceBar {
+  position: sticky;
+  top: 1rem;                 /* use top for sticky; reliable */
+  z-index: 2;                /* keep above content if needed */
+  background: inherit;
+  color: inherit;
+}
+
+.slider {
+  position: relative;
+  margin: 0;
+  border-radius: 18px;
+  background: inherit !important;   /* no forced light bg */
+  overflow: hidden; /* or overflow: clip; */
+}
+
+.slider-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  transition: transform .5s ease;
+  will-change: transform;           /* smoother sliding */
+}
+
+.slide {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+.ann-card {
+  background: white;          /* let surface show through */
+  color: inherit;                   /* no forced light text */
+  padding: 0rem clamp(0rem, 2vw, 1.6rem);
+  display: grid;
+  gap: .6rem;
+  grid-template-rows: auto auto 1fr auto auto;
+  border-radius: 12px;
+}
+
+/* ---- Dots & nav controls ---- */
+.dots {
+  position: absolute;
+  left: 50%;
+  bottom: .6rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: .5rem;
+}
+
+.dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 0;
+  background: #7B2CBF;
+  cursor: pointer;
+}
+
+.dots button[aria-current="true"] {
+  background: #C77DFF;
+  width: 22px;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  color: #000;
+  cursor: pointer;
+}
+
+.prev { left: .75rem; }
+.next { right: .75rem; }
+
+.announce-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end; /* button sits under bar, right-aligned */
+}
