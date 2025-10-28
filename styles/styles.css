@@ -16,7 +16,7 @@ body {
 }
 
 section {
-  max-width: 1440px;
+  max-width: 100%;
   padding: 3rem;
   grid-column: 2;
   grid-row: 1;
