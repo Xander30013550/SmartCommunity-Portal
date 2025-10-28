@@ -253,6 +253,13 @@ footer {
     transition: background 200ms;
     visibility: visible;
   }
+<<<<<<< HEAD
+=======
+
+  #toggle-btn:hover {
+    background-color: #c77dff;
+  }
+>>>>>>> ea3afc4b9f541abf3d1e97b9df344bade5c53cc9
 }
 
 /* ===================== Forms ===================== */
