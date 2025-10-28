@@ -144,14 +144,14 @@ footer {
   }
 
 #toggle-btn {
-  position: fixed;       /* fix it to viewport */
-  top: 1rem;             /* distance from top */
-  left: 1rem;            /* distance from left */
-  z-index: 1000;         /* above sidebar */
+  position: fixed;       
+  top: 1rem;        
+  left: 1rem;  
+  z-index: 1000;      
   padding: 0.75em;
   border: none;
   border-radius: 0.5em;
-  background: #7B2CBF;   /* optional, make it visible */
+  background: #7B2CBF; 
   color: #FBFEFB;
   cursor: pointer;
   transition: background 200ms;
