@@ -6,9 +6,13 @@ declare(strict_types=1);
 session_start();
 libxml_use_internal_errors(true);
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'functions.php';
 require_once 'auth.php';
 require_once __DIR__ . '/vendor/autoload.php';
+require_once './feedback/feedbackFunctions.php';
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
@@ -39,6 +43,8 @@ date_default_timezone_set('Australia/Perth');
 $menuRepo = new MenuRepository(__DIR__ . '/config');
 $nav = new NavRenderer($menuRepo);
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'admin.php');
+
+$feedbacks = getFeedbackFromTable(10, 0);
 ?>
 
 <!DOCTYPE html>
@@ -46,40 +52,61 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
 <html lang="en">
     <?php include './shared/header.php'; ?>
 
-<!--    Main Section      -->
+    <!--    Main Section      -->
 
-<body class="sb-expanded">
-    <?= $nav->render($current) ?>
+    <body class="sb-expanded">
+        <?= $nav->render($current) ?>
 
-    <!--    Page Content      -->
+        <!--    Page Content      -->
+        <main>
+            <section>
+                <h1 class="page-title">Admin Dashboard</h1>
 
-    <main>
-        <section>
-            <h1 class="page-title">Admin Dashboard</h1>
+                <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
+                    Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
+                    (<?= htmlspecialchars($user['role']) ?>)
+                    &nbsp;|&nbsp;
+                    <a href="?logout=true">Logout</a>
+                </div>
 
-            <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
-                Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
-                (<?= htmlspecialchars($user['role']) ?>)
-                &nbsp;|&nbsp;
-                <a href="?logout=true">Logout</a>
-            </div>
+                <a href="user_management.php">Manage Users</a><br><br>
+                <a href="announcements_management.php">Edit Announcements</a>
 
-            <p>Welcome, <?= htmlspecialchars($user['name']) ?>. You have administrator access.</p>
+                <div class="feedbackSection">
+                    <h2> Recent Feedback </h2>
+                    <?php if ($feedbacks): ?>
+                        <table class="responsive-table">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Created At</th>
+                            </tr>
 
-            <ul>
-                <li><a href="user_management.php">Manage Users</a></li>
-                <li><a href="announcements_management.php">Edit Announcements</a></li>
-            </ul>
-        </section>
-    </main> <!--    End page content    -->
+                            <?php foreach ($feedbacks as $feedback): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($feedback['name']) ?></td>
+                                    <td><?= htmlspecialchars($feedback['email']) ?></td>
+                                    <td><?= htmlspecialchars($feedback['subject']) ?></td>
+                                    <td><?= nl2br(htmlspecialchars($feedback['message'])) ?></td>
+                                    <td><?= htmlspecialchars($feedback['created_at']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    <?php else: ?>
+                        <p>No feedback found.</p>
+                    <?php endif; ?>
+                </div>
+            </section>
+        </main> <!--    End page content    -->
 
-    <!--    Footer section      -->
-    <footer>
-        &copy; 2025 CityLink Initiatives.
-        <a href="privacy.php">Privacy Policy</a>
-    </footer>
+        <!--    Footer section      -->
+        <footer>
+            &copy; 2025 CityLink Initiatives.
+            <a href="privacy.php">Privacy Policy</a>
+        </footer>
 
-    <script src="./js/script.js"></script>
-</body>
-
+        <script src="./js/script.js"></script>
+    </body>
 </html>

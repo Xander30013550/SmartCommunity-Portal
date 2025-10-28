@@ -508,3 +508,40 @@ img.logo {
 .btn.btn-edit:hover {
   background: #7b58bd22;
 }
+
+/*  Feedback table stuff on Admin page  */
+.responsive-table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+.responsive-table th, .responsive-table td {
+    padding: 0.5em;
+    text-align: left;
+    border: 1px solid #5a189a;
+}
+
+.responsive-table th {
+    background-color: #5a189a;
+    color: white;
+    font-weight: bold;
+}
+
+.feedbackSection {
+  margin-top: 1.5em;
+}
+
+/* Responsive Styling for Mobile */
+@media (max-width: 768px) {
+    .responsive-table th, .responsive-table td {
+        padding: 0.25em;
+        font-size: 0.9em;
+    }
+
+    /* Reduce padding on smaller screens */
+    .responsive-table td {
+        padding: 0.75em;
+    }
+}

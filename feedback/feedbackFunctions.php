@@ -45,3 +45,24 @@ function addFeedbackToTable (string $name, string $email, string $subject, strin
 
     return $errors;
 }
+
+function getFeedbackFromTable(int $limit = 10, int $offset = 0): array {
+    // Prepare the SQL query to fetch feedback with pagination
+    $sql = "SELECT id, name, email, subject, message, created_at FROM feedback ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+    
+    // Prepare the statement
+    $stmt = db()->prepare($sql);
+    
+    // Bind parameters
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    
+    // Execute the query
+    $stmt->execute();
+    
+    // Fetch all rows
+    $feedbacks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Return the feedback data
+    return $feedbacks;
+}
