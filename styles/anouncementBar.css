@@ -17,7 +17,7 @@ body { background: var(--surface); color: var(--text); }
 
 /* ---- Announcement bar & slider ---- */
 .announceBar {
-  position: sticky;
+  position: relative;
   top: 1rem;                 /* use top for sticky; reliable */
   z-index: 2;                /* keep above content if needed */
   background: inherit;
