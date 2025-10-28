@@ -54,16 +54,16 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'a
     <!--    Page Content      -->
 
     <main>
-        <h1 class="page-title">Admin Dashboard</h1>
-
-        <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
-            Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
-            (<?= htmlspecialchars($user['role']) ?>)
-            &nbsp;|&nbsp;
-            <a href="?logout=true">Logout</a>
-        </div>
-
         <section>
+            <h1 class="page-title">Admin Dashboard</h1>
+
+            <div class="user-info" style="margin-bottom: 1em; font-size: 1rem;">
+                Logged in as <strong><?= htmlspecialchars($user['name']) ?></strong>
+                (<?= htmlspecialchars($user['role']) ?>)
+                &nbsp;|&nbsp;
+                <a href="?logout=true">Logout</a>
+            </div>
+
             <p>Welcome, <?= htmlspecialchars($user['name']) ?>. You have administrator access.</p>
 
             <ul>
