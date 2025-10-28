@@ -158,7 +158,7 @@ if (isset($_GET['delete_id'])) {
                     &nbsp;|&nbsp; <a href="?logout=true">Logout</a>
                 </div>
 
-                <div style="display: flex; width:100%;">
+                <div style="display: flex; width:100%; flex-direction: column;">
                     <!--    Add user section    -->
                     <div style="flex: 1; padding: 10px;">
                         <h2> Add a New User </h2>
