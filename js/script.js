@@ -58,21 +58,25 @@ function handleFormSubmit(event) {
     const form = event.target;
     if (!form.checkValidity()) return;
 
-    const formInfo = document.getElementById('formInfo');
-    if (formInfo) {
-        formInfo.innerHTML = `
-            <p><strong>Name:</strong> ${document.getElementById('name').value}</p>
-            <p><strong>Email:</strong> ${document.getElementById('email').value}</p>
-            <p><strong>Subject:</strong> ${document.getElementById('subject').value}</p>
-            <p><strong>Message:</strong> ${document.getElementById('message').value}</p>
-        `;
-        formInfo.style.display = 'none';
-    }
+    const formData = new FormData(form);
 
-    const modal = document.getElementById('successModal');
-    if (modal) modal.style.display = 'flex';
-
-    form.reset();
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const modal = document.getElementById('successModal');
+            if (modal) modal.style.display = 'flex';
+            form.reset();
+        } else {
+            console.error('Form submission failed:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error during form submission:', error);
+    });
 }
 
 // ===================== Page Load =====================
