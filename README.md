@@ -151,15 +151,13 @@ CREATE TABLE feedback (
 
 ### Reservations Table
 ```sql
-CREATE TABLE Reservations (
-  ReservationID INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT UNSIGNED NOT NULL,
-  AmountOfPeople INT NOT NULL,
-  EventName VARCHAR(150) NOT NULL,
-  EventTime DATETIME NOT NULL,
-  EventLocation VARCHAR(200) NOT NULL,
-  CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+CREATE TABLE reservations (
+  reservation_id  INT AUTO_INCREMENT PRIMARY KEY,
+  event_id        INT NOT NULL,
+  name            VARCHAR(100) NOT NULL,
+  email           VARCHAR(254) NOT NULL,
+  amount          INT NOT NULL CHECK (amount >= 1),
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 ```
 

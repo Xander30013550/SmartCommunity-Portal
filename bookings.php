@@ -9,6 +9,7 @@ require_once 'auth.php';
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/db.php';
 
+
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
@@ -29,17 +30,31 @@ function getEventItems(): array
 /** @return array<string,string>|null */
 function getEventById(string $id): ?array
 {
+    $raw = $id;
     $id = trim($id);
-    if ($id === '')
-        return null;
 
-    $pdo = _db();
-    $stmt = $pdo->prepare("SELECT id, title, description, date_info AS date, location, cta_label
-                           FROM events WHERE id = :id");
-    $stmt->execute([':id' => $id]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row ?: null;
+    try {
+        // NOTE: use the same db() helper as elsewhere (fixes the _db() mismatch)
+        $pdo = db();
+
+        $stmt = $pdo->prepare(
+            "SELECT id, title, description, date_info AS date, location, cta_label
+             FROM events
+             WHERE id = :id"
+        );
+
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+        return $row;
+    } catch (Throwable $e) {
+        // Server logs for ops, console for quick debugging in the browser
+        error_log('[getEventById] ' . $e->getMessage());
+        return null;
+    }
 }
+
 
 /* ===================== Load Events ===================== */
 
@@ -124,6 +139,8 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
                             <label for="amount">Amount of people:</label>
                             <input type="number" id="amount" name="amount" required>
                         </div>
+                        <input type="hidden" name="event_id"
+                            value="<?= htmlspecialchars($selectedEvent['id'] ?? '') ?>">
 
                         <input type="hidden" name="eventName"
                             value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">

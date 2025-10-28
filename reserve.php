@@ -3,59 +3,70 @@
 //  logged in via session. It validates input fields, connects securely to a MySQL database, 
 //  escapes user inputs to prevent SQL injection, inserts a new reservation record into the 
 //  `reservations` table, and returns a JSON response indicating success or failure.
-
 declare(strict_types=1);
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
+require_once __DIR__ . '/db.php';
 
-// Make sure user is logged in
-if (!isset($_SESSION['user'])) {
-    echo json_encode(['success' => false, 'message' => 'You must be logged in.']);
+function fail(string $msg, int $http = 400, array $meta = []): never {
+    http_response_code($http);
+    error_log('[reserve.php] ' . $msg . (empty($meta) ? '' : ' | ' . json_encode($meta)));
+    echo json_encode(['success' => false, 'message' => $msg], JSON_UNESCAPED_SLASHES);
     exit;
 }
 
-// Grab POST data
-$name = trim($_POST['name'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$amount = (int) ($_POST['amount'] ?? 0);
-$eventName = trim($_POST['eventName'] ?? '');
-$eventTime = trim($_POST['eventTime'] ?? '');
-$eventLocation = trim($_POST['eventLocation'] ?? '');
+try {
+    if (!isset($_SESSION['user']['id'])) {
+        fail('You must be logged in.', 401);
+    }
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+        fail('Invalid method', 405);
+    }
 
-// Basic validation
-if ($name === '' || $email === '' || $amount <= 0 || $eventName === '' || $eventTime === '' || $eventLocation === '') {
-    echo json_encode(['success' => false, 'message' => 'Please fill in all fields.']);
-    exit;
+    $name    = trim((string)($_POST['name'] ?? ''));
+    $email   = trim((string)($_POST['email'] ?? ''));
+    $amount  = (int)($_POST['amount'] ?? 0);
+    $eventId = trim((string)($_POST['event_id'] ?? ''));
+
+    if ($name === '')  fail('Name is required.');
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('A valid email is required.');
+    if ($amount < 1)  fail('Amount must be at least 1.');
+    if ($eventId === '') fail('Please select an event before reserving.');
+
+    $pdo = db(); // your PDO helper should set ERRMODE_EXCEPTION
+
+    // Get canonical event details
+    $ev = $pdo->prepare("SELECT id, title, date_info AS date, location FROM events WHERE id = :id");
+    $ev->execute([':id' => $eventId]);
+    $event = $ev->fetch(PDO::FETCH_ASSOC);
+    if (!$event) {
+        fail('Selected event was not found.', 404, ['event_id' => $eventId]);
+    }
+
+    // Insert into your reservations table. If your schema uses different names, adjust here.
+    $ins = $pdo->prepare(
+        "INSERT INTO reservations ( event_id, name, email, amount, created_at)
+         VALUES ( :event_id, :name, :email, :amount, NOW())"
+    );
+    $ins->execute([
+        ':event_id' => $event['id'],
+        ':name'     => $name,
+        ':email'    => $email,
+        ':amount'   => $amount,
+    ]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Reservation submitted. See you there!',
+        'reservation' => [
+            'event_id' => $event['id'],
+            'name'     => $name,
+            'email'    => $email,
+            'amount'   => $amount
+        ],
+    ], JSON_UNESCAPED_SLASHES);
+} catch (Throwable $e) {
+    error_log('[reserve.php] ' . get_class($e) . ': ' . $e->getMessage());
+    fail('Server error while saving your reservation.', 500);
 }
-
-// Connect to MySQL using mysqli (like your login page)
-$conn = mysqli_connect('localhost', 'root', 'usbw', 'citylink', 3306);
-
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
-    exit;
-}
-
-// Escape values
-$nameEsc = mysqli_real_escape_string($conn, $name);
-$emailEsc = mysqli_real_escape_string($conn, $email);
-$eventNameEsc = mysqli_real_escape_string($conn, $eventName);
-$eventTimeEsc = mysqli_real_escape_string($conn, $eventTime);
-$eventLocationEsc = mysqli_real_escape_string($conn, $eventLocation);
-$userId = (int) ($_SESSION['user']['id'] ?? 0);
-
-// Insert reservation
-$sql = "INSERT INTO reservations (user_id, AmountOfPeople, EventName, EventTime, EventLocation, CreatedAt) 
-        VALUES ($userId, $amount, '$eventNameEsc', '$eventTimeEsc', '$eventLocationEsc', NOW())";
-
-if (mysqli_query($conn, $sql)) {
-    echo json_encode(['success' => true, 'message' => 'Reservation successfully submitted!']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . mysqli_error($conn)]);
-}
-
-mysqli_close($conn);
