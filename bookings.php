@@ -1,208 +1,193 @@
 <?php
 declare(strict_types=1);
+
+session_start();
 libxml_use_internal_errors(true);
 
-require __DIR__ . '/vendor/autoload.php';
+require_once 'functions.php';
+require_once 'auth.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/db.php';
+
 
 use App\Menu\MenuRepository;
 use App\Menu\NavRenderer;
 
-// Saves Event on Selected Event button click
-$eventsPath  = __DIR__ . '/config/events.xml';
-$eventsItems = getEventItems($eventsPath);
+$user = $_SESSION['user'] ?? [];
 
-// If xml is empty, fills default values
-if (empty($eventsItems)) {
-    $eventsItems = [
-        [
-            'id' => 'Event1',
-            'title' => 'Event1',
-            'description' => 'words',
-            'date' => 'never',
-            'location' => 'nowhere'
-        ],
-    ];
-}
+/* ===================== Event DB Functions ===================== */
 
-// Error Catch in case selected event was null
-$selectedEventId = $_GET['event'] ?? null;
-$selectedEvent   = null;
-
-if ($selectedEventId !== null) {
-    foreach ($eventsItems as $ev) {
-        if ((string)($ev['id'] ?? '') === (string)$selectedEventId) {
-            $selectedEvent = $ev;
-            break;
-        }
-    }
-}
-
-
-$menuRepo = new MenuRepository(__DIR__ . '/config');
-$nav      = new NavRenderer($menuRepo);
-
-$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
-function e(string $s): string
+/** @return array<int, array<string,string>> */
+function getEventItems(): array
 {
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+    $pdo = db();
+    $sql = "SELECT id, title, description, date_info AS date, location, cta_label
+            FROM events
+            ORDER BY date_info ASC, title ASC";
+    return _fetchAllAssoc($pdo, $sql);
 }
-/**
- * Load and parse an XML file safely. Returns SimpleXMLElement|null.
- */
-function loadXml(string $path): ?SimpleXMLElement
+
+/** @return array<string,string>|null */
+function getEventById(string $id): ?array
 {
-    if (!is_file($path))
+    $raw = $id;
+    $id = trim($id);
+
+    try {
+        // NOTE: use the same db() helper as elsewhere (fixes the _db() mismatch)
+        $pdo = db();
+
+        $stmt = $pdo->prepare(
+            "SELECT id, title, description, date_info AS date, location, cta_label
+             FROM events
+             WHERE id = :id"
+        );
+
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+        return $row;
+    } catch (Throwable $e) {
+        // Server logs for ops, console for quick debugging in the browser
+        error_log('[getEventById] ' . $e->getMessage());
         return null;
-    $xml = simplexml_load_file($path, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
-    return $xml !== false ? $xml : null;
+    }
 }
 
-function getEventItems(string $eventsPath): array
-{
-    $xml = loadXml($eventsPath);
-    if (!$xml)
-        return [];
 
-    // Pick the first <eventlist> or the one with id="primary"
-    $list = $xml->eventlist ?? null;
-    if (!$list && isset($xml->eventlist)) {
-        foreach ($xml->eventlist as $candidate) {
-            if ((string) ($candidate['id'] ?? '') === 'primary') {
-                $list = $candidate;
-                break;
-            }
-        }
-        // If still null, default to the first one
-        if (!$list && isset($xml->eventlist[0]))
-            $list = $xml->eventlist[0];
-    }
+/* ===================== Load Events ===================== */
 
-    if (!$list)
-        return [];
+$eventsItems = getEventItems();
 
-    $events = [];
-    foreach ($list->event as $node) {
-        $events[] = [
-            'id' => (string) ($node['id'] ?? ''),
-            'title' => trim((string) ($node->title ?? 'Untitled Event')),
-            'description' => trim((string) ($node->description ?? '')),
-            'date' => trim((string) ($node->date ?? '')),
-            'location' => trim((string) ($node->location ?? '')),
-        ];
-    }
+$selectedEventId = $_GET['event'] ?? null;
+$selectedEvent = $selectedEventId ? getEventById($selectedEventId) : null;
 
-    return $events;
-}
+/* ===================== Render Event HTML ===================== */
+
 function renderEventItem(array $e): void
 {
-    $when = $e['date'] !== '' ? e($e['date']) : 'TBA';
-    $loc = $e['location'] !== '' ? ' · ' . e($e['location']) : '';
-    // You don't have a CTA in XML yet; we can derive a default route using id
+    $when = $e['date'] !== '' ? htmlspecialchars($e['date']) : 'TBA';
+    $loc = $e['location'] !== '' ? ' · ' . htmlspecialchars($e['location']) : '';
     $ctaUrl = '?event=' . rawurlencode($e['id']);
-    $ctaLabel = 'Select Event';
+    $ctaLabel = $e['cta_label'] ?? 'Select Event';
     ?>
     <div class="event-item">
         <div>
-            <strong><?= e($e['title']) ?></strong><br>
+            <strong><?= htmlspecialchars($e['title']) ?></strong><br>
             <small><?= $when . $loc ?></small><br>
             <?php if ($e['description'] !== ''): ?>
-                Description: <?= e($e['description']) ?>
+                Description: <?= htmlspecialchars($e['description']) ?>
             <?php endif; ?>
         </div>
-        <a class="uniform-button" href="<?= e($ctaUrl) ?>"><?= e($ctaLabel) ?></a>
+        <a class="uniform-button" href="<?= htmlspecialchars($ctaUrl) ?>"><?= htmlspecialchars($ctaLabel) ?></a>
     </div>
     <?php
 }
-$eventsPath = __DIR__ . '/config/events.xml';
-$eventsItems = getEventItems($eventsPath);
-if (empty($eventsItems)) {
-    $eventsItems = [
-        ['id' => 'Event1', 'title' => 'Event1', 'description' => 'words', 'date' => 'never', 'location' => 'nowhere'],
-    ];
-}
 
-// Determine "active" item based on current path
+/* ===================== Navigation ===================== */
+
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav = new NavRenderer($menuRepo);
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
-?>
 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title> Smart Community Portal </title>
-    <link rel="stylesheet" href="./styles/styles.css" />
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-</head>
-
-<!--    Main Section    -->
+<?php include './shared/header.php'; ?>
 
 <body class="sb-expanded">
     <?= $nav->render($current) ?>
 
-    <!--    Page Content    -->
     <main>
-        <h1> Welcome to CityLink Initiatives </h1><br>
+        <section>
+            <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
 
-        <div class="upcoming-events">
-            <h2>Upcoming Events</h2>
-            <?php foreach ($eventsItems as $ev) {
-                renderEventItem($ev);
-            } ?>
-        </div>
+            <div class="upcoming-events">
+                <h2>Upcoming Events</h2>
+                <?php foreach ($eventsItems as $ev)
+                    renderEventItem($ev); ?>
+            </div>
 
-        <!-- Selected Event Field Box -->
-        <div class="selected-event">
-            <div id="userSelectedEvent">
+            <div class="selected-event">
                 <h2>Selected Event:</h2>
+
                 <?php if ($selectedEvent): ?>
-                <div class="event-details">
-                    <span class="event-title">
-                        <span class="label">Event:</span> <?= e($selectedEvent['title']) ?>
-                    </span>
-                    <span class="event-info">
-                        <span class="label">Date:</span> <?= e($selectedEvent['date']) ?>
-                        <span class="separator">|</span>
-                        <span class="label">Location:</span> <?= e($selectedEvent['location']) ?>
-                    </span>
-                </div>
+                    <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
+                        <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?>
+                    </p>
                 <?php else: ?>
                     <p>Please select an event to see details here.</p>
                 <?php endif; ?>
             </div>
-        </div>
 
+            <div class="selected-event">
+                <h2>Make a Reservation</h2>
+                <div class="form-inputs">
+                    <form id="reservationForm" method="POST">
+                        <div class="field">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+                        </div>
+                        <div class="field">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email"
+                                value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                        </div>
+                        <div class="field">
+                            <label for="amount">Amount of people:</label>
+                            <input type="number" id="amount" name="amount" required>
+                        </div>
+                        <input type="hidden" name="event_id"
+                            value="<?= htmlspecialchars($selectedEvent['id'] ?? '') ?>">
 
+                        <input type="hidden" name="eventName"
+                            value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
+                        <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
+                        <input type="hidden" name="eventLocation"
+                            value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
 
-
-        <div class="selected-event">
-            <div class="form-inputs">
-                <label for="name">Name: (Autofill if login)</label>
-                <input type="text" id="name" name="name">
-
-                <label for="email">Email: (Autofill if login)</label>
-                <input type="email" id="email" name="email">
-
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone">
-
-                <label for="amount">Amount of people:</label>
-                <input type="number" id="amount" name="amount">
-
-                <button class="submit-button">Submit</button>
+                        <div class="field">
+                            <button type="submit">Submit Reservation</button>
+                        </div>
+                        <div id="reservationFeedback"></div>
+                    </form>
+                </div>
             </div>
-        </div>
+        </section> 
     </main>
-    <!--    End page content    -->
 
-    <!--    Footer section      -->
-    <Footer>
-        &copy; 2025 CityLink Initiatives. &nbsp;
-        <a href="privacy.php"> Privacy Policy </a>
-    </Footer>
+    <footer>
+        &copy; 2025 CityLink Initiatives. &nbsp;<a href="privacy.php">Privacy Policy</a>
+    </footer>
 
-    <script type="text/javascript" src="./js/script.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('reservationForm');
+            const feedback = document.getElementById('reservationFeedback');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+
+                fetch('reserve.php', { method: 'POST', body: formData })
+                    .then(res => res.json())
+                    .then(data => {
+                        feedback.textContent = data.message;
+                        feedback.style.color = data.success ? 'green' : 'red';
+                        if (data.success) form.reset();
+                    })
+                    .catch(err => {
+                        feedback.textContent = "Error submitting reservation.";
+                        feedback.style.color = 'red';
+                        console.error(err);
+                    });
+            });
+        });
+    </script>
+
+    <script src="./js/script.js"></script>
 </body>
 
 </html>

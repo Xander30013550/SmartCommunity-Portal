@@ -1,17 +1,33 @@
 <?php
+//  This PHP script handles user registration by first redirecting already logged-in users based on their role. 
+//  It validates the submitted registration form data—checking name, email format, password length, and password 
+//  confirmation—and if valid, calls `registerUser()` to create the new user. Upon successful registration, it 
+//  logs the user in by storing their data in the session and redirects them to the homepage; otherwise, it 
+//  collects errors for display.
+
+declare(strict_types=1);
+
+require __DIR__ . '/vendor/autoload.php';
+use App\Menu\MenuRepository;
+use App\Menu\NavRenderer;
+$menuRepo = new MenuRepository(__DIR__ . '/config');
+$nav      = new NavRenderer($menuRepo);
+$current = $_SERVER['REQUEST_URI'] ?? '/index.php';
+
+
 require_once 'functions.php';
 require_once 'auth.php';
 
 // Check if already logged in
 session_start();
 if (isset($_SESSION['user'])) {
-    header('Location: index.php');
+    if ($_SESSION['user']['role'] === 'admin') {
+        header('Location: admin.php');
+    } else {
+        header('Location: user_home.php');
+    }
     exit;
 }
-
-$menusPath = __DIR__ . '/config/menus.xml';
-$menuItems = getPrimaryMenuItems($menusPath);
-$current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'index.php');
 
 $errors = [];
 $name = $email = $password = $confirm_password = '';
@@ -26,16 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name === '') {
         $errors['name'] = 'Name is required.';
     }
+
     if ($email === '') {
         $errors['email'] = 'Email is required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Invalid email format.';
     }
+
     if ($password === '') {
         $errors['password'] = 'Password is required.';
     } elseif (strlen($password) < 6) {
         $errors['password'] = 'Password must be at least 6 characters.';
     }
+
     if ($confirm_password === '') {
         $errors['confirm_password'] = 'Please confirm your password.';
     } elseif ($password !== $confirm_password) {
@@ -60,37 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Register - Smart Community Portal</title>
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
-    </head>
+    <!--    Loads the page header from its file -->
+    <?php include './shared/header.php'; ?>
     <body class="sb-expanded">
-        <nav id="sidebar">
-            <ul>
-                <li>
-                    <button onclick="toggleSidebar()" id="toggle-btn" aria-label="Toggle sidebar">
-                        <i id="icon-expand" class="bx bx-chevrons-right hidden"></i>
-                        <i id="icon-collapse" class="bx bx-chevrons-left"></i>
-                    </button>
-                </li>
-                <?php foreach ($menuItems as $item):
-                    $target = basename(parse_url($item['url'], PHP_URL_PATH) ?: '');
-                    $isActive = $target === $current || ($target === '' && $current === 'index.php');
-                ?>
-                <li class="<?= $isActive ? 'active' : '' ?>">
-                    <a href="<?= e($item['url']) ?>">
-                        <i class="<?= e($item['icon']) ?>"></i>
-                        <span><?= e($item['label']) ?></span>
-                    </a>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </nav>
+        <?= $nav->render($current) ?>
 
-        <main>
+    <main>
+        <section>
             <?php if (!empty($errors['general'])): ?>
                 <div class="error"><?= e($errors['general']) ?></div>
             <?php endif; ?>
@@ -101,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1>Register</h1>
 
                 <label for="name">Username</label>
-                <input type="text" id="name" name="name" value="<?= e($name) ?>" required />
+                <input type="text" id="name" name="name" value="<?php echo e($name); ?>" required />
                 <?php if (!empty($errors['name'])): ?>
                     <div class="error"><?= e($errors['name']) ?></div>
                 <?php endif; ?>
 
                 <label for="email">Email address</label>
-                <input type="email" id="email" name="email" value="<?= e($email) ?>" required />
+                <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
                 <?php if (!empty($errors['email'])): ?>
                     <div class="error"><?= e($errors['email']) ?></div>
                 <?php endif; ?>
@@ -117,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (!empty($errors['password'])): ?>
                     <div class="error"><?= e($errors['password']) ?></div>
                 <?php endif; ?>
-                
+
                 <label for="confirm_password">Confirm Password</label>
                 <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
                 <?php if (!empty($errors['confirm_password'])): ?>
@@ -127,13 +122,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit">Register</button>
                 <p>Already registered? <a href="login.php">Login here</a>.</p>
             </form>
-        </main>
+        </section>
+    </main> <!--    End Page Content      -->
 
-        <footer>
-            &copy; 2025 CityLink Initiatives.
-            <a href="privacy.php">Privacy Policy</a>
-        </footer>
+    <!--    Footer section      -->
+    <footer>
+        &copy; 2025 CityLink Initiatives.
+        <a href="privacy.php">Privacy Policy</a>
+    </footer>
 
-        <script type="text/javascript" src="./js/script.js" defer></script>
-    </body>
+    <script type="text/javascript" src="../js/script.js" defer></script>
+</body>
+
 </html>

@@ -1,0 +1,90 @@
+/* Layout host */
+main { flex: 1; }
+
+/* ---- Announcement bar & slider ---- */
+.announceBar {
+  position: relative;
+  top: 1rem;              /* use top for sticky; reliable */
+  z-index: 2;             /* keep above content if needed */
+  background: inherit;
+  color: inherit;
+}
+
+.slider {
+  position: relative;
+  margin: 0;
+  border-radius: 18px;
+  background: inherit !important;   /* no forced light bg */
+  overflow: hidden;                  /* or overflow: clip; */
+}
+
+.slider-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  transition: transform .5s ease;
+  will-change: transform;
+}
+
+.slide {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+.ann-card {
+  background: var(--card);
+  color: var(--text);
+  padding: 0rem clamp(0rem, 2vw, 1.6rem);
+  display: grid;
+  gap: .6rem;
+  grid-template-rows: auto auto 1fr auto auto;
+  border-radius: 12px;
+}
+
+/* ---- Dots & nav controls ---- */
+.dots {
+  position: absolute;
+  left: 50%;
+  bottom: .6rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: .5rem;
+}
+.dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--primary);
+  cursor: pointer;
+}
+.dots button[aria-current="true"] {
+  background: var(--primary-hover);
+  width: 22px;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--elev);
+  color: var(--text);
+  cursor: pointer;
+}
+.prev { left: .75rem; }
+.next { right: .75rem; }
+
+/* Actions row under the bar */
+.announce-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}

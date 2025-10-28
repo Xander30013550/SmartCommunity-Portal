@@ -3,9 +3,16 @@ declare(strict_types=1);
 namespace App\Menu;
 
 final class MenuRepository {
+    //  This constructor method initializes the class with a read-only string property representing 
+    // the configuration directory path. It ensures the directory value is set once and cannot be 
+    // changed afterward.
     public function __construct(private readonly string $configDir) {}
 
     /** @return array<int,array{id:string,label:string,url:string,icon:string,weight:int}> */
+    //  This method loads a menu configuration from an XML file in the specified config directory, 
+    //  selects the primary menu or the first available menu, then extracts and sorts its items by 
+    //  weight and label before returning them as an array. If the file is missing or invalid, it 
+    //  safely returns an empty array.
     public function primary(string $file='menus.xml'): array {
         $path = rtrim($this->configDir, '/\\') . DIRECTORY_SEPARATOR . $file;
         if (!is_file($path)) return [];
