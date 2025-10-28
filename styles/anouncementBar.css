@@ -1,25 +1,11 @@
-main {
-  flex: 1; 
-}
-:root {
-  --surface: #f7f7f7;   /* light surface (matches body) */
-  --text:    #10002B;
-  --footer-height: 64px; /* adjust to your real footer */
-}
-
-.dark {
-  --surface: #403b3b;   /* dark surface */
-  --text:    #e0e0e0;
-}
-
-/* Body picks up tokens so the slider can just inherit */
-body { background: var(--surface); color: var(--text); }
+/* Layout host */
+main { flex: 1; }
 
 /* ---- Announcement bar & slider ---- */
 .announceBar {
   position: relative;
-  top: 1rem;                 /* use top for sticky; reliable */
-  z-index: 2;                /* keep above content if needed */
+  top: 1rem;              /* use top for sticky; reliable */
+  z-index: 2;             /* keep above content if needed */
   background: inherit;
   color: inherit;
 }
@@ -29,7 +15,7 @@ body { background: var(--surface); color: var(--text); }
   margin: 0;
   border-radius: 18px;
   background: inherit !important;   /* no forced light bg */
-  overflow: hidden; /* or overflow: clip; */
+  overflow: hidden;                  /* or overflow: clip; */
 }
 
 .slider-track {
@@ -37,7 +23,7 @@ body { background: var(--surface); color: var(--text); }
   grid-auto-flow: column;
   grid-auto-columns: 100%;
   transition: transform .5s ease;
-  will-change: transform;           /* smoother sliding */
+  will-change: transform;
 }
 
 .slide {
@@ -50,8 +36,8 @@ body { background: var(--surface); color: var(--text); }
 }
 
 .ann-card {
-  background: white;          /* let surface show through */
-  color: inherit;                   /* no forced light text */
+  background: var(--card);
+  color: var(--text);
   padding: 0rem clamp(0rem, 2vw, 1.6rem);
   display: grid;
   gap: .6rem;
@@ -68,18 +54,16 @@ body { background: var(--surface); color: var(--text); }
   display: flex;
   gap: .5rem;
 }
-
 .dots button {
   width: 10px;
   height: 10px;
   border-radius: 999px;
   border: 0;
-  background: #7B2CBF;
+  background: var(--primary);
   cursor: pointer;
 }
-
 .dots button[aria-current="true"] {
-  background: #C77DFF;
+  background: var(--primary-hover);
   width: 22px;
 }
 
@@ -91,16 +75,16 @@ body { background: var(--surface); color: var(--text); }
   height: 42px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255,255,255,.9);
-  color: #000;
+  background: var(--elev);
+  color: var(--text);
   cursor: pointer;
 }
-
 .prev { left: .75rem; }
 .next { right: .75rem; }
 
+/* Actions row under the bar */
 .announce-actions {
   margin-top: 0.75rem;
   display: flex;
-  justify-content: flex-end; /* button sits under bar, right-aligned */
+  justify-content: flex-end;
 }
