@@ -124,10 +124,12 @@ footer {
 
   #sidebar {
     width: 100%;
-    height: auto;
+    height: 100%;
     position: fixed;
-    bottom: 0;
-    top: unset;
+      padding-top: 3rem;   /* leave space for fixed button */
+
+    bottom: unset;
+    top: 0;
     display: flex;
     justify-content: space-around;
     padding: 0.5em;
@@ -135,15 +137,31 @@ footer {
   }
 
   #sidebar.close {
-    width: 100%;
+    width: 0;   
+    height: 100%;
+    visibility: hidden;
+    overflow: hidden;
   }
 
-  #toggle-btn {
-    position: fixed;
-    bottom: 60px;
-    right: 1em;
-    z-index: 10;
-  }
+#toggle-btn {
+  position: fixed;       /* fix it to viewport */
+  top: 1rem;             /* distance from top */
+  left: 1rem;            /* distance from left */
+  z-index: 1000;         /* above sidebar */
+  padding: 0.75em;
+  border: none;
+  border-radius: 0.5em;
+  background: #7B2CBF;   /* optional, make it visible */
+  color: #FBFEFB;
+  cursor: pointer;
+  transition: background 200ms;
+  visibility: visible;
+}
+
+#toggle-btn:hover {
+  background-color: #C77DFF;
+}
+
 }
 
 /* ===================== Forms ===================== */
