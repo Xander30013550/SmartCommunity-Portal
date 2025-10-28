@@ -5,7 +5,7 @@ namespace App\Announcements;
 require_once __DIR__ . '/AnnouncementsRepositoryInterface.php';
 use DateTime;
 use SimpleXMLElement;
-final class AnnouncementsRepository {
+final class AnnouncementsRepository implements AnnouncementsRepositoryInterface {
     //  This constructor accepts a string parameter `$xmlPath` and assigns it
     //  to a private property of the same name within the class.
     public function __construct(private string $xmlPath){ }
