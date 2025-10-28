@@ -37,31 +37,32 @@ $isAdmin = isset($user) && (($user['role'] ?? '') === 'admin');
 ?>
 <!DOCTYPE html>
 <html lang="en">
-  <!--  Moved the header to its on php file, and passing a reference to it in each page -->
-  <?php include './shared/header.php'; ?>
+<!--  Moved the header to its on php file, and passing a reference to it in each page -->
+<?php include './shared/header.php'; ?>
 
 <body class="sb-expanded">
   <?= $nav->render($current) ?>
   <main class="home-page">
-  <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" />
-  <section class="announceBar">
-    <?= $annBar->render() ?>
-    <?php if ($isAdmin): ?>
-      <div class="announce-actions">
-        <a class="btn btn-edit" href="announcements_management.php" title="Edit announcements">
-          <i class='bx bx-edit'></i> Edit announcements
-        </a>
-      </div>
-    <?php endif; ?>
-  </section>
+    <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" />
+    <section class="announceBar">
+      <?= $annBar->render() ?>
+      <?php if ($isAdmin): ?>
+        <div class="announce-actions">
+          <a class="btn btn-edit" href="announcements_management.php" title="Edit announcements">
+            <i class='bx bx-edit'></i> Edit announcements
+          </a>
+        </div>
+      <?php endif; ?>
+    </section>
 
-  <div class="home">
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Et molestiae, iusto mollitia eveniet iste at exercitationem veniam dolores aliquam autem, ipsum sint optio culpa nihil. Eligendi optio sint id eos.</p>
-    <br>
-    <img src="./images/building.jpg" alt="CityLink Initiatives building" />
-  </div>
-  <br><br>
-</main>
+    <div class="home">
+      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Et molestiae, iusto mollitia eveniet iste at
+        exercitationem veniam dolores aliquam autem, ipsum sint optio culpa nihil. Eligendi optio sint id eos.</p>
+      <br>
+      <img src="./images/building.jpg" alt="CityLink Initiatives building" />
+    </div>
+    <br><br>
+  </main>
   <footer>
     &copy; 2025 CityLink Initiatives.
     <a href="privacy.php">Privacy Policy</a>
@@ -69,4 +70,5 @@ $isAdmin = isset($user) && (($user['role'] ?? '') === 'admin');
   <script src="./js/slider.js"></script>
   <script src="./js/script.js"></script>
 </body>
+
 </html>
