@@ -73,35 +73,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <body class="sb-expanded">
         <?= $nav->render($current) ?>
     <main>
-        <?php if (!empty($errors['general'])): ?>
-            <div class="error"><?= e($errors['general']) ?></div>
-        <?php endif; ?>
+        <section>
+            <?php if (!empty($errors['general'])): ?>
+                <div class="error"><?= e($errors['general']) ?></div>
+            <?php endif; ?>
 
-        <form method="POST" action="login.php" novalidate>
-            <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Company Logo" />
+            <form method="POST" action="login.php" novalidate>
+                <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Company Logo" />
 
-            <h1>Login</h1>
+                <h1>Login</h1>
 
-            <div>
-                <label for="login">Email or Username</label><br />
-                <input type="text" id="login" name="login" value="<?= e($login) ?>" required />
-                <?php if (!empty($errors['login'])): ?>
-                    <div class="error"><?= e($errors['login']) ?></div>
-                <?php endif; ?>
-            </div>
+                <div>
+                    <label for="login">Email or Username</label><br />
+                    <input type="text" id="login" name="login" value="<?= e($login) ?>" required />
+                    <?php if (!empty($errors['login'])): ?>
+                        <div class="error"><?= e($errors['login']) ?></div>
+                    <?php endif; ?>
+                </div>
 
-            <div>
-                <label for="password">Password</label><br />
-                <input type="password" id="password" name="password" required />
-                <?php if (!empty($errors['password'])): ?>
-                    <div class="error"><?= e($errors['password']) ?></div>
-                <?php endif; ?>
-            </div>
+                <div>
+                    <label for="password">Password</label><br />
+                    <input type="password" id="password" name="password" required />
+                    <?php if (!empty($errors['password'])): ?>
+                        <div class="error"><?= e($errors['password']) ?></div>
+                    <?php endif; ?>
+                </div>
 
-            <button type="submit">Login</button>
+                <button type="submit">Login</button>
 
-            <p> Don't have an account? <a href="register.php"> Register here</a>.</p>
-        </form>
+                <p> Don't have an account? <a href="register.php"> Register here</a>.</p>
+            </form>
+        </section>
     </main> <!--    End Page Content      -->
 
     <!--    Footer Section      -->

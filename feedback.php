@@ -142,70 +142,73 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <!--    Page Content    -->
 
     <main>
-        <div class="row">
-            <div class="column">
-                <form id="feedback-form" class="form" method="POST" action="">
-                    <!--    Company logo    -->
-                    <img src="./images/CityLinkIcon.png" width="50%" style="margin: auto;" />
+        <section>
+            <div class="row">
+                <div class="column">
+                    <form id="feedback-form" class="form" method="POST" action="">
+                        <!--    Company logo    -->
+                        <img src="./images/CityLinkIcon.png" width="50%" style="margin: auto;" />
 
-                    <h2> Feedback Form </h2>
+                        <h2> Feedback Form </h2>
 
-                    <label for="name"> Name: </label>
-                    <input type="text" id="name" name="name" required value="<?= htmlspecialchars($formData['name']) ?>">
+                        <label for="name"> Name: </label>
+                        <input type="text" id="name" name="name" required value="<?= htmlspecialchars($formData['name']) ?>">
 
-                    <label for="email"> Email: </label>
-                    <input type="email" id="email" name="email" required value="<?= htmlspecialchars($formData['email']) ?>">
+                        <label for="email"> Email: </label>
+                        <input type="email" id="email" name="email" required value="<?= htmlspecialchars($formData['email']) ?>">
 
-                    <label for="subject"> Subject: </label>
-                    <select id="subject" name="subject" required>
-                        <option value="" disabled <?= $formData['subject'] === '' ? 'selected' : '' ?>>Please Select...</option>
-                        <option value="eventBookings" <?= $formData['subject'] === 'eventBookings' ? 'selected' : '' ?>>Event Bookings</option>
-                        <option value="wasteManagement" <?= $formData['subject'] == 'wasteManagement' ? 'selected' : ''?>>Waste Management</option>
-                        <option value="communityPrograms" <?= $formData['subject'] == 'communityPrograms' ? 'selected' : ''?>>Community Programs</option>
-                        <option value="ratesEnquiries" <?= $formData['subject'] == 'ratesEnquiries' ? 'selected' : ''?>>Rates Enquiries</option>
-                        <option value="feedback" <?= $formData['subject'] == 'feedback' ? 'selected' : ''?>>Feedback</option>
-                        <option value="publicAnnouncements" <?= $formData['subject'] == 'publicAnnouncements' ? 'selected' : ''?>>Public Announcements</option>
-                        <option value="serviceRequests" <?= $formData['subject'] == 'serviceRequests' ? 'selected' : ''?>>Service Requests</option>
-                        <option value="volunteering" <?= $formData['subject'] == 'volunteering' ? 'selected' : ''?>>Volunteering Opportunities</option>
-                        <option value="other" <?= $formData['subject'] == 'other' ? 'selected' : ''?>>Other</option>
-                    </select>
+                        <label for="subject"> Subject: </label>
+                        <select id="subject" name="subject" required>
+                            <option value="" disabled <?= $formData['subject'] === '' ? 'selected' : '' ?>>Please Select...</option>
+                            <option value="eventBookings" <?= $formData['subject'] === 'eventBookings' ? 'selected' : '' ?>>Event Bookings</option>
+                            <option value="wasteManagement" <?= $formData['subject'] == 'wasteManagement' ? 'selected' : ''?>>Waste Management</option>
+                            <option value="communityPrograms" <?= $formData['subject'] == 'communityPrograms' ? 'selected' : ''?>>Community Programs</option>
+                            <option value="ratesEnquiries" <?= $formData['subject'] == 'ratesEnquiries' ? 'selected' : ''?>>Rates Enquiries</option>
+                            <option value="feedback" <?= $formData['subject'] == 'feedback' ? 'selected' : ''?>>Feedback</option>
+                            <option value="publicAnnouncements" <?= $formData['subject'] == 'publicAnnouncements' ? 'selected' : ''?>>Public Announcements</option>
+                            <option value="serviceRequests" <?= $formData['subject'] == 'serviceRequests' ? 'selected' : ''?>>Service Requests</option>
+                            <option value="volunteering" <?= $formData['subject'] == 'volunteering' ? 'selected' : ''?>>Volunteering Opportunities</option>
+                            <option value="other" <?= $formData['subject'] == 'other' ? 'selected' : ''?>>Other</option>
+                        </select>
 
-                    <label for="message"> Message: </label>
-                    
-                    <textarea id="message" name="message" required><?= htmlspecialchars($formData['message']) ?></textarea>
+                        <label for="message"> Message: </label>
+                        
+                        <textarea id="message" name="message" required><?= htmlspecialchars($formData['message']) ?></textarea>
 
-                    <button type="submit"> Submit </button>
+                        <button type="submit"> Submit </button>
 
-                </form>
+                    </form>
 
-                <!--    Modal Feedback Popup    -->
-                <div id="successModal" class="modal" style="display: none;">
-                    <div class="modal-content">
-                        <span id="closeModal" class="close">&times;</span>
-                        <div class="tick">&#10004;</div>
-                        <h2>Your Form Has Been Successfully Submitted</h2>
-                        <p>Look forward to hearing from us soon!</p>
+                    <!--    Modal Feedback Popup    -->
+                    <div id="successModal" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <span id="closeModal" class="close">&times;</span>
+                            <div class="tick">&#10004;</div>
+                            <h2>Your Form Has Been Successfully Submitted</h2>
+                            <p>Look forward to hearing from us soon!</p>
 
-                        <!-- Toggle form info button -->
-                        <button id="toggleInfoBtn">Show/Hide Form Info</button>
-                        <div id="formInfo" style="display:none; margin-top:10px; text-align:left;"></div>
+                            <!-- Toggle form info button -->
+                            <button id="toggleInfoBtn">Show/Hide Form Info</button>
+                            <div id="formInfo" style="display:none; margin-top:10px; text-align:left;"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="column">
+                    <div id="faq-container" class="faq-container">
+                        <h2>Frequently Asked Questions</h2>
+                        <?php foreach ($faqItems as $faq): ?>
+                            <details <?= $faq['id'] ? 'id="' . e($faq['id']) . '"' : '' ?>>
+                                <summary><?= e($faq['summary']) ?></summary>
+                                <p><?= nl2br(e($faq['description'])) ?></p>
+                            </details>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-
             </div>
-
-            <div class="column">
-                <div id="faq-container" class="faq-container">
-                    <h2>Frequently Asked Questions</h2>
-                    <?php foreach ($faqItems as $faq): ?>
-                        <details <?= $faq['id'] ? 'id="' . e($faq['id']) . '"' : '' ?>>
-                            <summary><?= e($faq['summary']) ?></summary>
-                            <p><?= nl2br(e($faq['description'])) ?></p>
-                        </details>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
+        </section>
+        
     </main> <!--    End page content    -->
 
     <!--    Footer section      -->

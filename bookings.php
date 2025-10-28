@@ -86,56 +86,59 @@ $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: 'i
     <?= $nav->render($current) ?>
 
     <main>
-        <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
+        <section>
+            <img src="./images/CityLinkLogo.png" alt="CityLink Initiatives" class="logo" /><br>
 
-        <div class="upcoming-events">
-            <h2>Upcoming Events</h2>
-            <?php foreach ($eventsItems as $ev)
-                renderEventItem($ev); ?>
-        </div>
-
-        <div class="selected-event">
-            <h2>Selected Event:</h2>
-            <?php if ($selectedEvent): ?>
-                <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
-                    <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?>
-                </p>
-            <?php else: ?>
-                <p>Please select an event to see details here.</p>
-            <?php endif; ?>
-        </div>
-
-        <div class="selected-event">
-            <h2>Make a Reservation</h2>
-            <div class="form-inputs">
-                <form id="reservationForm" method="POST">
-                    <div class="field">
-                        <label for="name">Name:</label>
-                        <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
-                    </div>
-                    <div class="field">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email"
-                            value="<?= htmlspecialchars($user['email'] ?? '') ?>">
-                    </div>
-                    <div class="field">
-                        <label for="amount">Amount of people:</label>
-                        <input type="number" id="amount" name="amount" required>
-                    </div>
-
-                    <input type="hidden" name="eventName"
-                        value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
-                    <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
-                    <input type="hidden" name="eventLocation"
-                        value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
-
-                    <div class="field">
-                        <button type="submit">Submit Reservation</button>
-                    </div>
-                    <div id="reservationFeedback"></div>
-                </form>
+            <div class="upcoming-events">
+                <h2>Upcoming Events</h2>
+                <?php foreach ($eventsItems as $ev)
+                    renderEventItem($ev); ?>
             </div>
-        </div>
+
+            <div class="selected-event">
+                <h2>Selected Event:</h2>
+
+                <?php if ($selectedEvent): ?>
+                    <p><strong><?= htmlspecialchars($selectedEvent['title']) ?></strong><br>
+                        <?= htmlspecialchars($selectedEvent['date']) ?> | <?= htmlspecialchars($selectedEvent['location']) ?>
+                    </p>
+                <?php else: ?>
+                    <p>Please select an event to see details here.</p>
+                <?php endif; ?>
+            </div>
+
+            <div class="selected-event">
+                <h2>Make a Reservation</h2>
+                <div class="form-inputs">
+                    <form id="reservationForm" method="POST">
+                        <div class="field">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+                        </div>
+                        <div class="field">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email"
+                                value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                        </div>
+                        <div class="field">
+                            <label for="amount">Amount of people:</label>
+                            <input type="number" id="amount" name="amount" required>
+                        </div>
+
+                        <input type="hidden" name="eventName"
+                            value="<?= htmlspecialchars($selectedEvent['title'] ?? '') ?>">
+                        <input type="hidden" name="eventTime" value="<?= htmlspecialchars($selectedEvent['date'] ?? '') ?>">
+                        <input type="hidden" name="eventLocation"
+                            value="<?= htmlspecialchars($selectedEvent['location'] ?? '') ?>">
+
+                        <div class="field">
+                            <button type="submit">Submit Reservation</button>
+                        </div>
+                        <div id="reservationFeedback"></div>
+                    </form>
+                </div>
+            </div>
+        </section> 
     </main>
 
     <footer>

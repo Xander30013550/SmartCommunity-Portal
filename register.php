@@ -85,42 +85,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?= $nav->render($current) ?>
 
     <main>
-        <?php if (!empty($errors['general'])): ?>
-            <div class="error"><?= e($errors['general']) ?></div>
-        <?php endif; ?>
-
-        <form method="POST" action="register.php" novalidate>
-            <img src="../images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Logo" />
-
-            <h1>Register</h1>
-
-            <label for="name">Username</label>
-            <input type="text" id="name" name="name" value="<?php echo e($name); ?>" required />
-            <?php if (!empty($errors['name'])): ?>
-                <div class="error"><?= e($errors['name']) ?></div>
+        <section>
+            <?php if (!empty($errors['general'])): ?>
+                <div class="error"><?= e($errors['general']) ?></div>
             <?php endif; ?>
 
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
-            <?php if (!empty($errors['email'])): ?>
-                <div class="error"><?= e($errors['email']) ?></div>
-            <?php endif; ?>
+            <form method="POST" action="register.php" novalidate>
+                <img src="./images/CityLinkIcon.png" width="33%" style="margin: auto;" alt="Logo" />
 
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required minlength="6" />
-            <?php if (!empty($errors['password'])): ?>
-                <div class="error"><?= e($errors['password']) ?></div>
-            <?php endif; ?>
+                <h1>Register</h1>
 
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
-            <?php if (!empty($errors['confirm_password'])): ?>
-                <div class="error"><?= e($errors['confirm_password']) ?></div>
-            <?php endif; ?>
+                <label for="name">Username</label>
+                <input type="text" id="name" name="name" value="<?php echo e($name); ?>" required />
+                <?php if (!empty($errors['name'])): ?>
+                    <div class="error"><?= e($errors['name']) ?></div>
+                <?php endif; ?>
 
-            <button type="submit">Register</button>
-            <p>Already registered? <a href="login.php">Login here</a>.</p>
-        </form>
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" value="<?php echo $email; ?>" required />
+                <?php if (!empty($errors['email'])): ?>
+                    <div class="error"><?= e($errors['email']) ?></div>
+                <?php endif; ?>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="6" />
+                <?php if (!empty($errors['password'])): ?>
+                    <div class="error"><?= e($errors['password']) ?></div>
+                <?php endif; ?>
+
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="6" />
+                <?php if (!empty($errors['confirm_password'])): ?>
+                    <div class="error"><?= e($errors['confirm_password']) ?></div>
+                <?php endif; ?>
+
+                <button type="submit">Register</button>
+                <p>Already registered? <a href="login.php">Login here</a>.</p>
+            </form>
+        </section>
     </main> <!--    End Page Content      -->
 
     <!--    Footer section      -->
