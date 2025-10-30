@@ -153,7 +153,7 @@ CREATE TABLE feedback (
 ```sql
 CREATE TABLE reservations (
   reservation_id  INT AUTO_INCREMENT PRIMARY KEY,
-  event_id        INT NOT NULL,
+  event_id        VARCHAR(100) NOT NULL,
   name            VARCHAR(100) NOT NULL,
   email           VARCHAR(254) NOT NULL,
   amount          INT NOT NULL CHECK (amount >= 1),
