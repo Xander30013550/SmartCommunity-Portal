@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="privacy.php">Privacy Policy</a>
     </footer>
 
-    <script type="text/javascript" src="../js/script.js" defer></script>
+    <script type="text/javascript" src="./js/script.js" defer></script>
 </body>
 
 </html>
