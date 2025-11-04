@@ -7,7 +7,8 @@ date_default_timezone_set('Australia/Perth');
 /* =========================== Public API =========================== */
 
 /** @return array<int, array<string, string>> */
-function getAnnouncements(): array {
+function getAnnouncements(): array
+{
     $pdo = _db();
     $sql = "SELECT id, priority, title, body, `start`, `end`, link_url, link_text, created_at, updated_at
             FROM announcements
@@ -20,9 +21,11 @@ function getAnnouncements(): array {
 //  back to LIKE queries otherwise, returning matched records ordered by start date, priority, and 
 //  update time. It supports exact matches on ID, priority, and dates, enhancing flexible search 
 //  capabilities.
-function searchAnnouncements(string $term): array {
+function searchAnnouncements(string $term): array
+{
     $term = trim($term);
-    if ($term === '') return getAnnouncements();
+    if ($term === '')
+        return getAnnouncements();
 
     $pdo = _db();
 
@@ -34,53 +37,65 @@ function searchAnnouncements(string $term): array {
                 WHERE MATCH(title, body) AGAINST (:q IN BOOLEAN MODE)
                    OR id = :eq
                    OR priority = :prio
-                   OR `start` = :date_eq
-                   OR `end`   = :date_eq
+                   OR `start` = :date_eq_start
+                   OR `end`   = :date_eq_end
                 ORDER BY `start` DESC, FIELD(priority, 'high','medium','low'), updated_at DESC";
         $stmt = $pdo->prepare($sql);
         $q = _toBooleanQuery($term);
+        $dateEq = _maybeYmd($term);
         $stmt->execute([
-            ':q'       => $q,
-            ':eq'      => $term,
-            ':prio'    => strtolower($term),
-            ':date_eq' => _maybeYmd($term),
+            ':q' => $q,
+            ':eq' => $term,
+            ':prio' => strtolower($term),
+            ':date_eq_start' => $dateEq,
+            ':date_eq_end' => $dateEq,
         ]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($rows) return $rows;
+        if ($rows)
+            return $rows;
         // Fallback to LIKE if fulltext yields nothing.
     }
 
     // Portable LIKE fallback (searches across key columns).
     $like = '%' . $term . '%';
     $sql = "SELECT id, priority, title, body, `start`, `end`, link_url, link_text, created_at, updated_at
-            FROM announcements
-            WHERE id LIKE :like
-               OR title LIKE :like
-               OR body LIKE :like
-               OR priority LIKE :like
-               OR `start` = :date_eq
-               OR `end`   = :date_eq
-            ORDER BY `start` DESC, FIELD(priority, 'high','medium','low'), updated_at DESC";
+        FROM announcements
+        WHERE id LIKE :like_id
+           OR title LIKE :like_title
+           OR body LIKE :like_body
+           OR priority LIKE :like_priority
+           OR `start` = :date_eq_start
+           OR `end`   = :date_eq_end
+        ORDER BY `start` DESC, FIELD(priority, 'high','medium','low'), updated_at DESC";
     $stmt = $pdo->prepare($sql);
+    $dateEq = _maybeYmd($term);
     $stmt->execute([
-        ':like'    => $like,
-        ':date_eq' => _maybeYmd($term),
+        ':like_id' => $like,
+        ':like_title' => $like,
+        ':like_body' => $like,
+        ':like_priority' => $like,
+        ':date_eq_start' => $dateEq,
+        ':date_eq_end' => $dateEq,
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
 //  This function validates announcement data, checks if an announcement ID is unique, 
 //  and inserts a new announcement into the database with timestamps, returning true on 
 //  success or an error message if it fails.
-function addAnnouncement(array $data) {
+function addAnnouncement(array $data)
+{
     $v = _validateAnnouncementData($data, false);
-    if (!$v['ok']) return ['error' => implode(' ', $v['errors'])];
+    if (!$v['ok'])
+        return ['error' => implode(' ', $v['errors'])];
 
     $pdo = _db();
 
     // Unique ID check
     $exists = _fetchValue($pdo, "SELECT 1 FROM announcements WHERE id = ?", [$data['id']]);
-    if ($exists) return ['error' => "Announcement with id '{$data['id']}' already exists."];
+    if ($exists)
+        return ['error' => "Announcement with id '{$data['id']}' already exists."];
 
     $now = _now();
     $sql = "INSERT INTO announcements
@@ -88,19 +103,20 @@ function addAnnouncement(array $data) {
             VALUES (:id, :priority, :title, :body, :start, :end, :link_url, :link_text, :created_at, :updated_at)";
     $stmt = $pdo->prepare($sql);
     $ok = $stmt->execute([
-        ':id'         => $data['id'],
-        ':priority'   => strtolower($data['priority']),
-        ':title'      => $data['title'],
-        ':body'       => $data['body'],
-        ':start'      => $data['start'], // YYYY-MM-DD
-        ':end'        => $data['end'],   // YYYY-MM-DD
-        ':link_url'   => $data['link_url'] ?? null,
-        ':link_text'  => $data['link_text'] ?? null,
+        ':id' => $data['id'],
+        ':priority' => strtolower($data['priority']),
+        ':title' => $data['title'],
+        ':body' => $data['body'],
+        ':start' => $data['start'], // YYYY-MM-DD
+        ':end' => $data['end'],   // YYYY-MM-DD
+        ':link_url' => $data['link_url'] ?? null,
+        ':link_text' => $data['link_text'] ?? null,
         ':created_at' => $now,
         ':updated_at' => $now,
     ]);
 
-    if ($ok) return true;
+    if ($ok)
+        return true;
     return ['error' => 'There was an error adding the announcement.'];
 }
 
@@ -108,12 +124,15 @@ function addAnnouncement(array $data) {
 //  This function validates and updates specified fields of an announcement by ID, 
 //  dynamically building the SQL SET clause and updating the `updated_at` timestamp, 
 //  returning true on success or false on failure.
-function updateAnnouncement(string $id, array $changes): bool {
+function updateAnnouncement(string $id, array $changes): bool
+{
     $id = trim($id);
-    if ($id === '') return false;
+    if ($id === '')
+        return false;
 
     $v = _validateAnnouncementData($changes, true);
-    if (!$v['ok']) return false;
+    if (!$v['ok'])
+        return false;
 
     $pdo = _db();
 
@@ -121,21 +140,22 @@ function updateAnnouncement(string $id, array $changes): bool {
     $fields = [];
     $params = [':id' => $id];
     $map = [
-        'priority'  => 'priority',
-        'title'     => 'title',
-        'body'      => 'body',
-        'start'     => '`start`',
-        'end'       => '`end`',
-        'link_url'  => 'link_url',
+        'priority' => 'priority',
+        'title' => 'title',
+        'body' => 'body',
+        'start' => '`start`',
+        'end' => '`end`',
+        'link_url' => 'link_url',
         'link_text' => 'link_text',
     ];
     foreach ($map as $k => $col) {
         if (array_key_exists($k, $changes) && $changes[$k] !== '' && $changes[$k] !== null) {
             $fields[] = "$col = :$k";
-            $params[":$k"] = ($k === 'priority') ? strtolower((string)$changes[$k]) : (string)$changes[$k];
+            $params[":$k"] = ($k === 'priority') ? strtolower((string) $changes[$k]) : (string) $changes[$k];
         }
     }
-    if (!$fields) return true; // nothing to change
+    if (!$fields)
+        return true; // nothing to change
 
     $fields[] = "updated_at = :updated_at";
     $params[':updated_at'] = _now();
@@ -147,9 +167,11 @@ function updateAnnouncement(string $id, array $changes): bool {
 
 //  This function deletes an announcement by its trimmed ID and returns 
 // true if successful or false if the ID is empty or the deletion fails.
-function deleteAnnouncement(string $id): bool {
+function deleteAnnouncement(string $id): bool
+{
     $id = trim($id);
-    if ($id === '') return false;
+    if ($id === '')
+        return false;
 
     $pdo = _db();
     $stmt = $pdo->prepare("DELETE FROM announcements WHERE id = :id");
@@ -161,38 +183,48 @@ function deleteAnnouncement(string $id): bool {
 //  ensuring priority values are correct, dates are properly formatted and ordered, URLs 
 //  are valid, and link text is provided if a URL exists, returning an array with validation 
 //  status and error messages.
-function _validateAnnouncementData(array $data, bool $isUpdate): array {
+function _validateAnnouncementData(array $data, bool $isUpdate): array
+{
     $errors = [];
 
     if (!$isUpdate) {
-        foreach (['id','priority','title','body','start','end'] as $req) {
-            if (empty($data[$req])) $errors[] = "Field '{$req}' is required.";
+        foreach (['id', 'priority', 'title', 'body', 'start', 'end'] as $req) {
+            if (empty($data[$req]))
+                $errors[] = "Field '{$req}' is required.";
         }
     }
 
-    if (isset($data['priority']) && $data['priority'] !== '' &&
-        !in_array(strtolower((string)$data['priority']), ['low','medium','high'], true)) {
+    if (
+        isset($data['priority']) && $data['priority'] !== '' &&
+        !in_array(strtolower((string) $data['priority']), ['low', 'medium', 'high'], true)
+    ) {
         $errors[] = "Priority must be low, medium, or high.";
     }
 
-    foreach (['start','end'] as $d) {
-        if (isset($data[$d]) && $data[$d] !== '' && !_validDateYmd((string)$data[$d])) {
+    foreach (['start', 'end'] as $d) {
+        if (isset($data[$d]) && $data[$d] !== '' && !_validDateYmd((string) $data[$d])) {
             $errors[] = ucfirst($d) . " must be in YYYY-MM-DD format.";
         }
     }
 
-    if (!empty($data['start']) && !empty($data['end'])
-        && _validDateYmd((string)$data['start']) && _validDateYmd((string)$data['end'])
-        && (string)$data['end'] < (string)$data['start']) {
+    if (
+        !empty($data['start']) && !empty($data['end'])
+        && _validDateYmd((string) $data['start']) && _validDateYmd((string) $data['end'])
+        && (string) $data['end'] < (string) $data['start']
+    ) {
         $errors[] = 'End date must be on or after the start date.';
     }
 
-    if (isset($data['link_url']) && $data['link_url'] !== '' &&
-        !filter_var((string)$data['link_url'], FILTER_VALIDATE_URL)) {
-            $errors[] = 'Link URL must be a valid URL.';
+    if (
+        isset($data['link_url']) && $data['link_url'] !== '' &&
+        !filter_var((string) $data['link_url'], FILTER_VALIDATE_URL)
+    ) {
+        $errors[] = 'Link URL must be a valid URL.';
     }
-    if (isset($data['link_url']) && $data['link_url'] !== '' &&
-        isset($data['link_text']) && $data['link_text'] === '') {
+    if (
+        isset($data['link_url']) && $data['link_url'] !== '' &&
+        isset($data['link_text']) && $data['link_text'] === ''
+    ) {
         $errors[] = 'Provide link text when a link URL is set.';
     }
 
@@ -201,7 +233,8 @@ function _validateAnnouncementData(array $data, bool $isUpdate): array {
 
 //  This function checks if a string is a valid date in YYYY-MM-DD format by 
 //  parsing it with DateTime and verifying the exact format.
-function _validDateYmd(string $d): bool {
+function _validDateYmd(string $d): bool
+{
     $dt = DateTime::createFromFormat('Y-m-d', $d);
     return $dt && $dt->format('Y-m-d') === $d;
 }
@@ -210,21 +243,23 @@ function _validDateYmd(string $d): bool {
 //  This function returns a singleton PDO connection to a MySQL database using defined 
 //  constants for host, database, user, password, and charset, with error handling and 
 //  default fetch mode set.
-function _db(): PDO {
+function _db(): PDO
+{
     static $pdo = null;
-    if ($pdo instanceof PDO) return $pdo;
+    if ($pdo instanceof PDO)
+        return $pdo;
 
     $host = DB_HOST;
-    $db   = DB_NAME;
+    $db = DB_NAME;
     $user = DB_USER;
     $pass = defined('DB_PASS') ? DB_PASS : '';
     $charset = defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4';
 
     $dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
     $opt = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_EMULATE_PREPARES => false,
     ];
     $pdo = new PDO($dsn, $user, $pass, $opt);
     return $pdo;
@@ -233,7 +268,8 @@ function _db(): PDO {
 
 //  This function executes a prepared PDO query with optional parameters and returns 
 //  the first column of the first row or null if no results are found.
-function _fetchValue(PDO $pdo, string $sql, array $params = []) {
+function _fetchValue(PDO $pdo, string $sql, array $params = [])
+{
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $val = $stmt->fetchColumn();
@@ -242,7 +278,8 @@ function _fetchValue(PDO $pdo, string $sql, array $params = []) {
 
 //  This function returns the current date and time as a string formatted like 
 //  "YYYY-MM-DD HH:MM:SS".
-function _now(): string {
+function _now(): string
+{
     return (new DateTimeImmutable('now'))->format('Y-m-d H:i:s');
 }
 
@@ -251,23 +288,27 @@ function _now(): string {
 /** Detect if FULLTEXT index exists (simple cache). */
 //  This function checks if the `announcements` table has a FULLTEXT index named 
 //  `ft_title_body` and caches the result to avoid repeated queries.
-function _hasFulltext(PDO $pdo): bool {
+function _hasFulltext(PDO $pdo): bool
+{
     static $cache = null;
-    if ($cache !== null) return $cache;
+    if ($cache !== null)
+        return $cache;
 
     // Look for a FULLTEXT index named ft_title_body (matches DDL below).
     $sql = "SHOW INDEX FROM announcements WHERE Index_type = 'FULLTEXT' AND Key_name = 'ft_title_body'";
-    $cache = (bool)_fetchValue($pdo, $sql);
+    $cache = (bool) _fetchValue($pdo, $sql);
     return $cache;
 }
 
 /** Convert raw term into a BOOLEAN MODE query string. */
 //  This function converts a search term into a MySQL full-text boolean query by prefixing 
 //  each word with a `+` to require its presence, preserving any existing `+` or `-` prefixes.
-function _toBooleanQuery(string $term): string {
+function _toBooleanQuery(string $term): string
+{
     $parts = preg_split('/\s+/', trim($term));
     $parts = array_filter($parts, fn($p) => $p !== '');
-    if (!$parts) return $term;
+    if (!$parts)
+        return $term;
     // Require each term, prefix with '+' (e.g., "+power +outage")
     return implode(' ', array_map(fn($p) => (str_starts_with($p, '+') || str_starts_with($p, '-')) ? $p : ('+' . $p), $parts));
 }
@@ -275,7 +316,8 @@ function _toBooleanQuery(string $term): string {
 /** Return Y-m-d if $s looks like a date; otherwise null. */
 //  This function trims a string and returns it if it's a valid YYYY-MM-DD date; 
 //  otherwise, it returns null.
-function _maybeYmd(string $s): ?string {
+function _maybeYmd(string $s): ?string
+{
     $s = trim($s);
     return _validDateYmd($s) ? $s : null;
 }
